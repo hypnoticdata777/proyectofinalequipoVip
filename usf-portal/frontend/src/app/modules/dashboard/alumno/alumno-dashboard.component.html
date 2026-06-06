@@ -1,0 +1,80 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Portal</span>
+      <nav class="nav-links">
+        <a routerLink="/inscripcion">Inscripción</a>
+        <a routerLink="/historial">Mi Historial</a>
+        <a routerLink="/calificaciones">Calificaciones</a>
+      </nav>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content" *ngIf="!cargando">
+    <div class="perfil-card">
+      <img [src]="usuario?.foto || 'assets/default-avatar.png'" [alt]="usuario?.nombre" class="avatar">
+      <div class="perfil-info">
+        <h1>Bienvenido, {{ usuario?.nombre }} {{ usuario?.apellido }}</h1>
+        <p class="matricula">Matrícula: {{ usuario?.matricula || 'Sin asignar' }}</p>
+        <p class="email">{{ usuario?.email }}</p>
+      </div>
+    </div>
+
+    <div class="accesos-grid">
+      <a routerLink="/inscripcion" class="acceso-card">
+        <span class="acceso-icon">📚</span>
+        <h3>Inscripción</h3>
+        <p>Registra tus materias del semestre</p>
+      </a>
+      <a routerLink="/historial" class="acceso-card">
+        <span class="acceso-icon">📋</span>
+        <h3>Mi Historial</h3>
+        <p>Consulta tu kardex académico</p>
+      </a>
+      <a routerLink="/calificaciones" class="acceso-card">
+        <span class="acceso-icon">📊</span>
+        <h3>Calificaciones</h3>
+        <p>Revisa tus notas actuales</p>
+      </a>
+    </div>
+
+    <div class="materias-section" *ngIf="inscripcion">
+      <h2>Materias Inscritas — Periodo {{ inscripcion.periodo }}</h2>
+      <div class="tabla-wrapper">
+        <table class="tabla-materias">
+          <thead>
+            <tr>
+              <th>Clave</th>
+              <th>Materia</th>
+              <th>Profesor</th>
+              <th>Créditos</th>
+              <th>Horario</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let materia of inscripcion.materias">
+              <td>{{ materia.clave }}</td>
+              <td>{{ materia.nombre }}</td>
+              <td>{{ materia.profesor?.nombre }} {{ materia.profesor?.apellido }}</td>
+              <td>{{ materia.creditos }}</td>
+              <td>
+                <span *ngFor="let h of materia.horario" class="horario-badge">
+                  {{ h.dia }} {{ h.horaInicio }}-{{ h.horaFin }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="sin-inscripcion" *ngIf="!inscripcion">
+      <p>No tienes una inscripción activa. <a routerLink="/inscripcion">¡Inscríbete ahora!</a></p>
+    </div>
+  </main>
+
+  <div class="loader" *ngIf="cargando">
+    <div class="spinner"></div>
+  </div>
+</div>

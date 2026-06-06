@@ -1,0 +1,51 @@
+.dashboard-wrapper { min-height: 100vh; background: #f5f7fa; }
+
+.header-usf {
+  background: #0A2540; padding: 0 24px;
+  .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; height: 64px; gap: 16px; }
+  .logo-text { color: #D4AF37; font-weight: 800; font-size: 1.2rem; flex: 1; }
+  .btn-back { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.9rem; &:hover { color: #D4AF37; } }
+  .btn-logout { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; &:hover { background: #D4AF37; color: #0A2540; } }
+}
+
+.main-content { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+.historial-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 32px; }
+.alumno-info {
+  h1 { color: #0A2540; margin: 0 0 4px; }
+  p { margin: 0 0 2px; color: #555; }
+  .mat { color: #888; font-size: 0.85rem; }
+}
+
+.btn-pdf { background: #0A2540; color: #D4AF37; border: 2px solid #D4AF37; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: all 0.3s; &:hover:not(:disabled) { background: #D4AF37; color: #0A2540; } &:disabled { opacity: 0.6; cursor: not-allowed; } }
+
+.resumen-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 32px; }
+
+.resumen-card {
+  background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 4px 16px rgba(10,37,64,0.08); border-top: 3px solid #D4AF37;
+  &.verde { border-top-color: #2e7d32; .resumen-valor { color: #2e7d32; } }
+  &.rojo { border-top-color: #c62828; .resumen-valor { color: #c62828; } }
+  .resumen-valor { font-size: 2.5rem; font-weight: 800; color: #0A2540; }
+  .resumen-label { color: #666; font-size: 0.85rem; margin-top: 4px; }
+}
+
+.periodos-section { display: flex; flex-direction: column; gap: 24px; }
+
+.periodo-bloque { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 16px rgba(10,37,64,0.08); }
+
+.periodo-header { background: #0A2540; color: white; padding: 12px 20px; display: flex; justify-content: space-between; font-weight: 600; span:last-child { color: #D4AF37; } }
+
+.tabla-historial {
+  width: 100%; border-collapse: collapse; font-size: 0.875rem;
+  th { background: #f5f7fa; color: #0A2540; padding: 10px 16px; text-align: left; font-weight: 600; border-bottom: 2px solid #e0e0e0; }
+  td { padding: 10px 16px; border-bottom: 1px solid #f0f0f0; }
+  tr:hover td { background: #f9f9ff; }
+}
+
+.badge-aprobado { background: #e8f5e9; color: #2e7d32; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+.badge-reprobado { background: #ffebee; color: #c62828; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
+.badge-pendiente { background: #fff9e6; color: #b07d00; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; }
+
+.loader { display: flex; align-items: center; justify-content: center; min-height: 60vh; }
+.spinner { width: 48px; height: 48px; border: 4px solid #D4AF37; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
