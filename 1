@@ -1,0 +1,384 @@
+Stack Tecnológico
+Frontend: Angular 17+ (standalone components, lazy loading)
+Backend: Node.js + Express.js
+Base de datos: MongoDB (Mongoose como ODM)
+Auth: Google OAuth 2.0 + JWT
+Tiempo real: Socket.io (notificaciones push, RF-22)
+Pagos: Stripe (RF-30)
+PDF: PDFKit (referencias bancarias RF-31)
+Testing: Jest (backend) + Karma/Jasmine (frontend)
+CI/CD: GitHub Actions
+
+SDLC Completo en Español
+FASE 1: Análisis de Requerimientos (YA TIENES ESTO)
+Esta fase ya está parcialmente cubierta por tu MTR del PDF. Lo que queda por completar:
+1.1 Historias de Usuario (una por cada RF)
+Formato: "Como [rol], quiero [acción] para [beneficio]."
+Ejemplos basados en tu MTR:
+
+"Como alumno, quiero iniciar sesión con mi cuenta Google institucional para acceder de forma segura al portal."
+"Como alumno, quiero inscribir mis materias en tiempo real para confirmar mi carga académica sin ir a ventanilla."
+"Como profesor, quiero registrar calificaciones parciales y finales para tener el historial de mi grupo."
+
+1.2 Criterios de aceptación por cada RF (los tomas directamente de los CP de tu MTR, ya los tienes todos)
+Artefactos que produce esta fase: MTR (lista), User Stories document, Glosario de términos del sistema
+
+FASE 2: Diseño del Sistema
+2.1 Arquitectura general
+Cliente (Angular)  →  API REST (Express)  →  MongoDB
+                    ↕
+              Socket.io (Notificaciones)
+                    ↕
+              Google OAuth 2.0
+                    ↕
+              Stripe API
+2.2 Diseño de Base de Datos - Schemas MongoDB
+javascript// USERS (Alumnos, Profesores, Administradores)
+{
+  _id, googleId, nombre, apellido, email,
+  rol: "alumno" | "profesor" | "admin",
+  foto, matricula, activo, fechaCreacion
+}
+
+// MATERIAS
+{
+  _id, clave, nombre, creditos,
+  cupoMaximo, cupoDisponible,
+  horario: [{ dia, horaInicio, horaFin, salon }],
+  seriacion: [materia_id],  // prerequisitos
+  profesor_id, periodo, activa
+}
+
+// INSCRIPCIONES
+{
+  _id, alumno_id, periodo,
+  materias: [materia_id],
+  estado: "pendiente" | "confirmada" | "cancelada",
+  fechaInscripcion
+}
+
+// CALIFICACIONES
+{
+  _id, alumno_id, materia_id, profesor_id,
+  periodo, parcial1, parcial2, parcial3, final,
+  cerrada: Boolean, fechaCierre
+}
+
+// PAGOS
+{
+  _id, alumno_id, concepto, monto,
+  tipo: "colegiaturas" | "tramite",
+  estado: "pendiente" | "pagado" | "fallido",
+  metodo: "stripe" | "spei" | "oxxo",
+  referencia, stripePaymentId, fecha
+}
+
+// NOTIFICACIONES
+{
+  _id, destinatario_id, titulo, mensaje,
+  tipo: "calificacion" | "horario" | "pago",
+  leida: Boolean, fecha
+}
+2.3 Diseño de API (endpoints principales)
+POST   /api/auth/google          → Login OAuth
+GET    /api/auth/me              → Perfil actual
+
+GET    /api/materias             → Listado de materias
+POST   /api/inscripciones        → Inscribir materias
+GET    /api/inscripciones/:id    → Ver inscripción
+
+PUT    /api/calificaciones/:id   → Registrar notas (Profesor)
+GET    /api/historial/:alumnoId  → Kardex completo
+
+POST   /api/pagos/stripe         → Procesar pago
+POST   /api/pagos/referencia     → Generar referencia SPEI/OXXO
+GET    /api/notificaciones/me    → Mis notificaciones
+Artefactos de esta fase: Diagrama de arquitectura, Schemas de BD, Documento de API (Swagger/OpenAPI), Wireframes de cada DIS de la MTR
+
+FASE 3: Implementación
+Esta es la fase más larga. Se divide en los 3 módulos que te explico abajo detallado.
+Ambiente de desarrollo que cada integrante debe tener:
+bash# Instalar Node.js 20 LTS
+# Instalar Angular CLI
+npm install -g @angular/cli
+
+# Instalar MongoDB Community (local) o usar MongoDB Atlas (cloud)
+
+# Clonar el repo
+git clone https://github.com/[org]/usf-portal.git
+cd usf-portal
+
+# Backend
+cd backend
+npm install
+cp .env.example .env   # Llenar variables
+
+# Frontend
+cd ../frontend
+npm install
+ng serve
+Variables de entorno (.env):
+MONGODB_URI=mongodb://localhost:27017/usf_portal
+JWT_SECRET=tu_secreto_aqui
+GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=xxx
+STRIPE_SECRET_KEY=sk_test_xxx
+PORT=3000
+
+FASE 4: Pruebas
+Cada CP de tu MTR se convierte en un test case real:
+CP del MTRTipo de PruebaHerramientaCP-01, CP-02E2E AuthCypressCP-03Unit test GuardJestCP-04 a CP-06Integration (inscripción)Jest + SupertestCP-07Unit (calificaciones)JestCP-08Integration (Socket.io)JestCP-09, CP-10Integration (Stripe sandbox)JestCP-11Integration (API mapping)JestCP-12Stress test (5000 usuarios)Artillery.io
+
+FASE 5: Despliegue
+Frontend → Vercel o Firebase Hosting
+Backend  → Railway o Render (gratis para proyectos de escuela)
+MongoDB  → MongoDB Atlas (free tier 512MB)
+CI/CD    → GitHub Actions (build + test en cada PR)
+
+FASE 6: Mantenimiento
+Post-entrega: documentación de bugs encontrados, changelog, y README actualizado.
+
+Estructura de Carpetas del Proyecto
+usf-portal/
+├── frontend/
+│   └── src/app/
+│       ├── core/
+│       │   ├── guards/          # AuthGuard, RoleGuard
+│       │   ├── interceptors/    # JWT interceptor
+│       │   └── services/        # AuthService, UserService
+│       ├── shared/
+│       │   └── components/      # Navbar, Loader, Modal
+│       └── modules/
+│           ├── auth/            # MÓDULO 1
+│           ├── dashboard/       # MÓDULO 1
+│           ├── inscripcion/     # MÓDULO 2
+│           ├── calificaciones/  # MÓDULO 2
+│           ├── historial/       # MÓDULO 2
+│           ├── pagos/           # MÓDULO 3
+│           └── notificaciones/  # MÓDULO 3
+├── backend/
+│   └── src/
+│       ├── config/              # DB, passport, stripe config
+│       ├── controllers/
+│       ├── middleware/          # auth, roles, error handler
+│       ├── models/              # Mongoose schemas
+│       ├── routes/
+│       └── services/
+├── docs/
+│   ├── 01_analisis/
+│   ├── 02_diseño/
+│   ├── 03_implementacion/
+│   ├── 04_pruebas/
+│   └── 05_despliegue/
+└── README.md
+
+Los 3 Módulos Detallados
+
+MÓDULO 1: Autenticación, Seguridad y Control de Acceso
+RFs cubiertos: RF-01, RF-05
+CPs cubiertos: CP-01, CP-02, CP-03
+Backend - lo que hay que construir:
+/backend/src/
+├── config/passport.js          # Google OAuth strategy
+├── models/User.js              # Schema de usuario
+├── routes/auth.routes.js       # /api/auth/*
+├── controllers/auth.controller.js
+└── middleware/
+    ├── verifyToken.js          # Valida JWT en cada request
+    └── checkRole.js            # Valida que el rol tenga permiso
+La lógica del login funciona así:
+1. Usuario hace clic en "Iniciar sesión con Google"
+2. Angular redirige a /api/auth/google
+3. Passport.js inicia el flujo OAuth con Google
+4. Google devuelve el perfil al callback
+5. Backend busca o crea el User en MongoDB
+6. Backend firma un JWT con { id, rol, nombre }
+7. Redirige al frontend con el token en query param
+8. Angular guarda el token en localStorage
+9. Cada request subsiguiente incluye el JWT en el header
+10. verifyToken.js valida el JWT y pone req.user
+11. checkRole.js verifica que el rol tenga permiso para esa ruta
+Frontend - lo que hay que construir:
+/frontend/src/app/modules/auth/
+├── login/            # Pantalla de login con botón Google (DIS-01: #0A2540 + #D4AF37)
+└── callback/         # Captura el JWT de la URL y guarda en localStorage
+
+/frontend/src/app/modules/dashboard/
+├── alumno/           # Dashboard del alumno
+├── profesor/         # Dashboard del profesor
+└── admin/            # Dashboard del admin
+
+/frontend/src/app/core/guards/
+├── auth.guard.ts     # Redirige a login si no hay token
+└── role.guard.ts     # Redirige si el rol no tiene acceso a esa ruta
+
+MÓDULO 2: Núcleo Académico
+RFs cubiertos: RF-14, RF-15, RF-20, RF-38
+CPs cubiertos: CP-04, CP-05, CP-06, CP-07, CP-11
+Este es el módulo más pesado. Se divide en 3 sub-features:
+Sub-feature A: Inscripción de Materias
+La lógica de validación (RF-15) es la más crítica. Antes de confirmar la inscripción, el backend debe correr estas 4 validaciones en secuencia:
+javascript// services/inscripcion.service.js
+async function validarInscripcion(alumnoId, materiasIds) {
+  
+  // 1. Verificar que no tenga adeudos financieros (CP-05)
+  const adeudos = await Pago.find({ alumno_id: alumnoId, estado: "pendiente" });
+  if (adeudos.length > 0) throw new Error("ADEUDO_FINANCIERO");
+
+  // 2. Verificar cupo disponible
+  for (const id of materiasIds) {
+    const materia = await Materia.findById(id);
+    if (materia.cupoDisponible <= 0) throw new Error(`SIN_CUPO: ${materia.nombre}`);
+  }
+
+  // 3. Verificar seriación (prerequisitos)
+  const historial = await Calificacion.find({ alumno_id: alumnoId, aprobada: true });
+  for (const id of materiasIds) {
+    const materia = await Materia.findById(id).populate("seriacion");
+    const prerequisitosAprobados = materia.seriacion.every(pre =>
+      historial.some(h => h.materia_id.equals(pre._id))
+    );
+    if (!prerequisitosAprobados) throw new Error(`SERIACION_INCOMPLETA: ${materia.nombre}`);
+  }
+
+  // 4. Verificar choques de horario (CP-06)
+  const materias = await Materia.find({ _id: { $in: materiasIds } });
+  // Comparar cada par de horarios para detectar traslapes
+  for (let i = 0; i < materias.length; i++) {
+    for (let j = i + 1; j < materias.length; j++) {
+      if (tienenCruceDeHorario(materias[i].horario, materias[j].horario)) {
+        throw new Error(`CRUCE_HORARIO: ${materias[i].nombre} con ${materias[j].nombre}`);
+      }
+    }
+  }
+
+  return true; // Todo OK → proceder
+}
+Sub-feature B: Captura de Calificaciones
+Lógica importante: una vez que el admin cierra el periodo, las notas deben quedar bloqueadas (CP-07). El campo cerrada: Boolean en el schema lo maneja:
+javascript// Middleware que bloquea edición si el acta está cerrada
+async function protegerActaCerrada(req, res, next) {
+  const calificacion = await Calificacion.findById(req.params.id);
+  if (calificacion.cerrada) {
+    return res.status(403).json({ error: "El acta ya fue cerrada por administración" });
+  }
+  next();
+}
+Sub-feature C: Historial Académico (Kardex)
+Endpoint que agrega todas las calificaciones del alumno por periodo y calcula promedios:
+javascript// GET /api/historial/:alumnoId
+const historial = await Calificacion.find({ alumno_id: alumnoId })
+  .populate("materia_id", "nombre clave creditos")
+  .sort({ periodo: 1 });
+
+MÓDULO 3: Finanzas, Notificaciones y Performance
+RFs cubiertos: RF-22, RF-30, RF-31, RF-54
+CPs cubiertos: CP-08, CP-09, CP-10, CP-12
+Sub-feature A: Pagos con Stripe
+javascript// POST /api/pagos/stripe
+const paymentIntent = await stripe.paymentIntents.create({
+  amount: monto * 100,  // Stripe trabaja en centavos
+  currency: "mxn",
+  metadata: { alumnoId, concepto }
+});
+// El frontend confirma el pago con el client_secret
+Sub-feature B: Referencias SPEI/OXXO
+Genera un PDF con barcode usando PDFKit:
+javascript// POST /api/pagos/referencia
+// Genera referencia con 18 dígitos, CIE Banamex style
+// Usa PDFKit para generar el PDF descargable (CP-10)
+Sub-feature C: Notificaciones en Tiempo Real (Socket.io)
+javascript// Cuando un profesor guarda calificaciones → dispara evento
+io.to(alumnoId).emit("nueva_notificacion", {
+  tipo: "calificacion",
+  mensaje: `Tus calificaciones de ${materia} han sido publicadas`
+});
+// CP-08: esto debe llegar en < 2 segundos
+Sub-feature D: Stress Test RF-54
+yaml# artillery.config.yml
+config:
+  target: "http://localhost:3000"
+  phases:
+    - duration: 60
+      arrivalRate: 83        # 83 usuarios/segundo = ~5000 en 1 minuto
+scenarios:
+  - flow:
+      - post:
+          url: "/api/inscripciones"
+          json:
+            alumnoId: "test_{{ $randomNumber() }}"
+            materiasIds: ["id1", "id2"]
+
+GitHub Workflow
+Setup inicial del repo
+bash# Carlos (o quien sea el líder) hace esto UNA VEZ
+
+# 1. Crear organización en GitHub: "usf-vip-equipo" (o el nombre que quieran)
+# 2. Crear el repositorio: usf-portal
+# 3. Configurar branch protection en main y develop
+
+# Branches permanentes:
+main     → código en producción, solo se toca via PR desde develop
+develop  → integración, aquí se mergean todas las features
+
+# Branches de feature (temporales, se borran al mergear):
+feature/modulo1-auth
+feature/modulo1-dashboard
+feature/modulo2-inscripcion
+feature/modulo2-calificaciones
+feature/modulo2-historial
+feature/modulo3-pagos
+feature/modulo3-notificaciones
+Flujo de trabajo diario para cada integrante
+bash# 1. Siempre partir desde develop actualizado
+git checkout develop
+git pull origin develop
+
+# 2. Crear tu branch de feature
+git checkout -b feature/modulo2-inscripcion
+
+# 3. Trabajar, hacer commits frecuentes
+git add .
+git commit -m "feat(inscripcion): agrega validación de choques de horario"
+
+# 4. Push de tu branch
+git push origin feature/modulo2-inscripcion
+
+# 5. Abrir Pull Request en GitHub hacia develop
+# 6. Otro integrante hace code review
+# 7. Se mergea, se borra el branch de feature
+Convención de commits (importante para el SDLC)
+feat(módulo): descripción     → nueva funcionalidad
+fix(módulo): descripción      → corrección de bug
+docs: descripción             → solo documentación
+test(módulo): descripción     → agregar pruebas
+chore: descripción            → configuración, deps
+GitHub Projects (tablero Kanban)
+Crear un Project en GitHub con estas columnas:
+📋 Backlog → 🔄 En Progreso → 👀 En Revisión → ✅ Completado
+Cada RF del MTR se convierte en un Issue de GitHub. Ejemplo:
+
+Issue #1: [RF-01] Implementar login OAuth 2.0 con Google
+Issue #2: [RF-05] Control de acceso por roles (Guard en Angular)
+Issue #3: [RF-14] Módulo de inscripción de materias
+
+
+Asignación Sugerida por Integrante
+Con tu equipo de 5, así lo distribuiría yo:
+Carlos Sanchez → Líder Técnico + Módulo 1 Backend (Auth, JWT, roles)
+Lo tuyo es la arquitectura y el setup inicial. Tú armas el repo, defines los schemas de Mongo, y haces la base del backend (Express, rutas, middleware). También coordinas las integraciones.
+Luis Roberto Suarez → Módulo 1 Frontend (Angular: login, dashboards, guards)
+El que más domina Angular del equipo se va aquí. El auth guard y el routing por roles son críticos para que todo lo demás funcione.
+Ricardo Galindo → Módulo 2 Backend (inscripción, calificaciones, historial)
+El desarrollador más analítico va en el núcleo académico. La lógica de validación de inscripciones (las 4 reglas) es lo más complejo del sistema.
+Eduardo Robles → Módulo 2 Frontend (Angular: formularios de inscripción, actas de calificación, kardex)
+Trabaja en paralelo con Ricardo. Mientras Ricardo hace los endpoints, Eduardo hace los componentes Angular que los consumen.
+Mariana Jimenez → Módulo 3 completo (Stripe, referencias bancarias PDF, Socket.io notificaciones)
+Este módulo tiene menos interconexión con los otros dos, lo que permite trabajar más independiente. Perfecto para completar en paralelo.
+
+Próximos Pasos Inmediatos (Orden Exacto)
+Paso 1: Carlos crea el repo en GitHub, la estructura de carpetas, .gitignore, README.md con arquitectura documentada, y el tablero de GitHub Projects con todos los Issues del MTR.
+Paso 2: Carlos inicializa el backend básico (Express + Mongoose connection + Passport config) y el frontend (Angular CLI con lazy loading por módulo). Pushea a develop. Todos hacen fork/clone desde ahí.
+Paso 3: Cada integrante toma su rama de feature y empieza a trabajar. La única regla: no se mergea a develop sin que otro integrante haya revisado el PR.
+Paso 4: Documentación en /docs/ va creciendo en paralelo al código. Cada integrante documenta su módulo en la carpeta correspondiente del SDLC.
+Paso 5: Antes de la entrega final, todos se juntan para correr el stress test de Artillery (RF-54 / CP-12) y los E2E de Cypress. Lo que falle va a un hotfix branch.
