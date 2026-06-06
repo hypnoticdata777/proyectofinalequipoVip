@@ -1,0 +1,84 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Portal</span>
+      <a [routerLink]="'/dashboard/' + rolUsuario" class="btn-back">← Volver</a>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content" *ngIf="!cargando && historial">
+    <div class="historial-header">
+      <div class="alumno-info">
+        <h1>Historial Académico</h1>
+        <p>{{ historial.alumno.nombre }} {{ historial.alumno.apellido }}</p>
+        <p class="mat">Matrícula: {{ historial.alumno.matricula || 'N/A' }}</p>
+      </div>
+      <button class="btn-pdf" (click)="descargarPDF()" [disabled]="descargando">
+        {{ descargando ? 'Generando...' : '📄 Descargar Kardex PDF' }}
+      </button>
+    </div>
+
+    <div class="resumen-grid">
+      <div class="resumen-card">
+        <div class="resumen-valor">{{ historial.resumen.promedioGeneral }}</div>
+        <div class="resumen-label">Promedio General</div>
+      </div>
+      <div class="resumen-card">
+        <div class="resumen-valor">{{ historial.resumen.totalCreditos }}</div>
+        <div class="resumen-label">Créditos Aprobados</div>
+      </div>
+      <div class="resumen-card verde">
+        <div class="resumen-valor">{{ historial.resumen.materiasAprobadas }}</div>
+        <div class="resumen-label">Materias Aprobadas</div>
+      </div>
+      <div class="resumen-card rojo">
+        <div class="resumen-valor">{{ historial.resumen.materiasReprobadas }}</div>
+        <div class="resumen-label">Materias Reprobadas</div>
+      </div>
+    </div>
+
+    <div class="periodos-section">
+      <div class="periodo-bloque" *ngFor="let periodo of historial.historialPorPeriodo">
+        <div class="periodo-header">
+          <span>Periodo: {{ periodo.periodo }}</span>
+          <span>Promedio: {{ periodo.promedioPeriodo }}</span>
+        </div>
+        <table class="tabla-historial">
+          <thead>
+            <tr>
+              <th>Materia</th>
+              <th>Créditos</th>
+              <th>Parcial 1</th>
+              <th>Parcial 2</th>
+              <th>Parcial 3</th>
+              <th>Final</th>
+              <th>Estatus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cal of periodo.materias">
+              <td>{{ cal.materia?.nombre }}</td>
+              <td>{{ cal.materia?.creditos }}</td>
+              <td>{{ cal.parcial1 || '-' }}</td>
+              <td>{{ cal.parcial2 || '-' }}</td>
+              <td>{{ cal.parcial3 || '-' }}</td>
+              <td>{{ cal.calificacionFinal?.toFixed(1) || '-' }}</td>
+              <td>
+                <span *ngIf="cal.calificacionFinal !== null"
+                      [class]="cal.calificacionFinal >= 60 ? 'badge-aprobado' : 'badge-reprobado'">
+                  {{ cal.calificacionFinal >= 60 ? 'Aprobado' : 'Reprobado' }}
+                </span>
+                <span *ngIf="cal.calificacionFinal === null" class="badge-pendiente">En curso</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <div class="loader" *ngIf="cargando">
+    <div class="spinner"></div>
+  </div>
+</div>
