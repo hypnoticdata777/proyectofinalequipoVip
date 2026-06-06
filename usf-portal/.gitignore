@@ -1,0 +1,94 @@
+# =============================================
+# VARIABLES DE ENTORNO (nunca subir al repo)
+# =============================================
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+*.env
+
+# =============================================
+# NODE.JS / BACKEND
+# =============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+.npm
+.pnp
+.pnp.js
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+lib-cov/
+coverage/
+.nyc_output/
+
+# =============================================
+# ANGULAR / FRONTEND
+# =============================================
+/frontend/dist/
+/frontend/.angular/
+/frontend/node_modules/
+/frontend/.sass-cache/
+/frontend/coverage/
+/frontend/typings/
+.angular/
+
+# =============================================
+# TESTING
+# =============================================
+coverage/
+.nyc_output/
+junit.xml
+test-results/
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
+artillery-report-*.json
+
+# =============================================
+# SISTEMA OPERATIVO
+# =============================================
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*~
+
+# =============================================
+# IDEs Y EDITORES
+# =============================================
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+
+# =============================================
+# ARCHIVOS GENERADOS
+# =============================================
+*.class
+*.jar
+alumnos.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
