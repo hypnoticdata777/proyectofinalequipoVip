@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Actividad 4 – Matriz de Trazabilidad | Equipo VIP</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; font-size: 10px; color: #1a1a1a; background: #fff; padding: 20px; }
+  .portada { text-align: center; padding: 60px 20px; page-break-after: always; }
+  .portada h1 { font-size: 22px; color: #003366; margin-bottom: 10px; }
+  .portada h2 { font-size: 16px; color: #003366; margin-bottom: 30px; }
+  .portada .materia { font-size: 13px; margin-bottom: 6px; }
+  .portada .equipo { margin-top: 40px; }
+  .portada .equipo h3 { font-size: 14px; color: #003366; margin-bottom: 14px; border-bottom: 2px solid #003366; padding-bottom: 6px; }
+  .portada .integrante { font-size: 12px; margin: 8px 0; font-weight: bold; }
+  .portada .fecha { margin-top: 40px; font-size: 11px; color: #555; }
+  .logo-area { margin-bottom: 30px; }
+  .logo-text { font-size: 28px; font-weight: 900; color: #003366; letter-spacing: 2px; }
+  .logo-sub { font-size: 11px; color: #666; letter-spacing: 4px; }
+
+  h2.section { font-size: 14px; color: #003366; border-left: 4px solid #003366; padding-left: 10px; margin: 20px 0 10px 0; }
+  p.intro { font-size: 10px; margin-bottom: 14px; line-height: 1.6; }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 9px; }
+  th { background: #003366; color: #fff; padding: 6px 4px; text-align: center; border: 1px solid #ccc; }
+  td { padding: 5px 4px; border: 1px solid #ccc; vertical-align: top; }
+  tr:nth-child(even) { background: #f0f4f8; }
+  tr:hover { background: #dce8f5; }
+
+  .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 8px; font-weight: bold; color: #fff; }
+  .finalizado { background: #27ae60; }
+  .en-proceso { background: #e67e22; }
+  .pendiente  { background: #c0392b; }
+
+  .legend { display: flex; gap: 14px; margin-bottom: 14px; font-size: 9px; align-items: center; }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+
+  .footer { margin-top: 30px; font-size: 8px; color: #999; text-align: center; border-top: 1px solid #ddd; padding-top: 10px; }
+  .page-break { page-break-before: always; }
+
+  .resumen-table td:first-child { font-weight: bold; width: 180px; }
+  .highlight { background: #fff9c4 !important; }
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="portada">
+  <div class="logo-area">
+    <div class="logo-text">USF PORTAL</div>
+    <div class="logo-sub">SISTEMA ESCOLAR INTEGRAL</div>
+  </div>
+  <h1>Actividad 4</h1>
+  <h2>Construcción de una Matriz de Trazabilidad</h2>
+  <div class="materia">Trazabilidad y Configuración de Software — Ciclo 2026-0</div>
+  <div class="materia">Profesor: Rafael Bernal Gallegos</div>
+  <div class="equipo">
+    <h3>EQUIPO VIP</h3>
+    <div class="integrante">CARLOS SANCHEZ GONZALEZ</div>
+    <div class="integrante">LUIS ROBERTO SUAREZ ESQUIVEL</div>
+    <div class="integrante">RICARDO GALINDO RODRIGUEZ</div>
+    <div class="integrante">EDUARDO ROBLES BARCENAS</div>
+    <div class="integrante">MARIANA JIMENEZ VALDEZ</div>
+  </div>
+  <div class="fecha">Fecha de entrega: 06 de Junio de 2026</div>
+</div>
+
+<!-- INTRODUCCIÓN -->
+<h2 class="section">1. Introducción</h2>
+<p class="intro">
+La presente matriz de trazabilidad ha sido elaborada para el proyecto <strong>USF Portal – Sistema Escolar Integral</strong>, un portal web para la gestión académica, inscripciones, calificaciones, pagos y notificaciones de una institución universitaria. La matriz relaciona cada requerimiento identificado con los casos de uso correspondientes, los módulos o componentes del sistema, las pruebas asociadas y el estado actual de implementación, permitiendo asegurar el seguimiento y cumplimiento de cada necesidad del sistema.
+</p>
+
+<h2 class="section">2. Identificación de Requerimientos</h2>
+<p class="intro">Se identificaron <strong>15 requerimientos funcionales (RF)</strong> y <strong>7 requerimientos no funcionales (RNF)</strong>, distribuidos en tres módulos principales de desarrollo.</p>
+
+<!-- RESUMEN CONTEO -->
+<table style="width:400px; margin-bottom:20px;">
+  <tr><th>Tipo</th><th>Cantidad</th><th>Finalizado</th><th>En Proceso</th><th>Pendiente</th></tr>
+  <tr><td>Requerimientos Funcionales (RF)</td><td style="text-align:center">15</td><td style="text-align:center;color:#27ae60;font-weight:bold">9</td><td style="text-align:center;color:#e67e22;font-weight:bold">3</td><td style="text-align:center;color:#c0392b;font-weight:bold">3</td></tr>
+  <tr><td>Requerimientos No Funcionales (RNF)</td><td style="text-align:center">7</td><td style="text-align:center;color:#27ae60;font-weight:bold">4</td><td style="text-align:center;color:#e67e22;font-weight:bold">2</td><td style="text-align:center;color:#c0392b;font-weight:bold">1</td></tr>
+  <tr style="font-weight:bold;background:#003366;color:#fff"><td>TOTAL</td><td style="text-align:center">22</td><td style="text-align:center">13</td><td style="text-align:center">5</td><td style="text-align:center">4</td></tr>
+</table>
+
+<div class="legend">
+  Leyenda de estado:
+  <span><span class="badge finalizado">Finalizado</span> Implementado y funcional</span>
+  <span><span class="badge en-proceso">En Proceso</span> En desarrollo parcial</span>
+  <span><span class="badge pendiente">Pendiente</span> No iniciado</span>
+</div>
+
+<!-- MATRIZ PRINCIPAL -->
+<h2 class="section">3. Matriz de Trazabilidad — Requerimientos Funcionales</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:50px">ID</th>
+      <th style="width:160px">Descripción del Requerimiento</th>
+      <th style="width:100px">Caso de Uso</th>
+      <th style="width:130px">Módulo / Componente</th>
+      <th style="width:80px">Archivo(s) del Sistema</th>
+      <th style="width:60px">Prueba(s) Asociada(s)</th>
+      <th style="width:70px">Responsable</th>
+      <th style="width:60px">Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>RF-01</strong></td>
+      <td>El sistema debe permitir el inicio de sesión con email y contraseña, retornando un token JWT firmado.</td>
+      <td>CU-01: Iniciar Sesión</td>
+      <td>Módulo 1 – Backend Auth</td>
+      <td>auth.controller.js<br/>auth.routes.js</td>
+      <td>CP-01, CP-02</td>
+      <td>Carlos Sanchez</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-02</strong></td>
+      <td>El sistema debe permitir el registro de nuevos usuarios asignando roles: alumno, profesor o admin.</td>
+      <td>CU-02: Registrar Usuario</td>
+      <td>Módulo 1 – Backend Auth</td>
+      <td>auth.controller.js<br/>User.js</td>
+      <td>CP-01</td>
+      <td>Carlos Sanchez</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-03</strong></td>
+      <td>El sistema debe validar el token JWT en cada petición a rutas protegidas antes de ejecutar la lógica.</td>
+      <td>CU-03: Validar Identidad</td>
+      <td>Módulo 1 – Middleware</td>
+      <td>verifyToken.js</td>
+      <td>CP-02, CP-03</td>
+      <td>Carlos Sanchez</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-04</strong></td>
+      <td>El sistema debe controlar el acceso a cada endpoint según el rol del usuario autenticado.</td>
+      <td>CU-04: Controlar Acceso por Rol</td>
+      <td>Módulo 1 – Middleware</td>
+      <td>checkRole.js</td>
+      <td>CP-03</td>
+      <td>Carlos Sanchez</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-05</strong></td>
+      <td>El sistema debe mostrar un dashboard diferenciado según el rol: alumno, profesor o administrador.</td>
+      <td>CU-05: Ver Dashboard</td>
+      <td>Módulo 1 – Frontend Angular</td>
+      <td>dashboard/alumno/<br/>dashboard/profesor/<br/>dashboard/admin/</td>
+      <td>CP-02</td>
+      <td>Luis Roberto Suarez</td>
+      <td><span class="badge pendiente">Pendiente</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-06</strong></td>
+      <td>El sistema debe permitir consultar el perfil del usuario actualmente autenticado.</td>
+      <td>CU-06: Ver Perfil</td>
+      <td>Módulo 1 – Backend Auth</td>
+      <td>auth.controller.js<br/>GET /api/auth/me</td>
+      <td>CP-02</td>
+      <td>Carlos Sanchez</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-14</strong></td>
+      <td>El sistema debe permitir a un alumno inscribir materias para un periodo académico determinado.</td>
+      <td>CU-07: Inscribir Materias</td>
+      <td>Módulo 2 – Backend Inscripción</td>
+      <td>inscripciones.controller.js<br/>inscripcion.service.js</td>
+      <td>CP-04, CP-05</td>
+      <td>Ricardo Galindo</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-15</strong></td>
+      <td>El sistema debe ejecutar 4 validaciones antes de confirmar una inscripción: sin adeudos, cupo disponible, seriación completa y sin choques de horario.</td>
+      <td>CU-08: Validar Inscripción</td>
+      <td>Módulo 2 – Service Layer</td>
+      <td>inscripcion.service.js</td>
+      <td>CP-05, CP-06</td>
+      <td>Ricardo Galindo</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-16</strong></td>
+      <td>El sistema debe mostrar formularios de inscripción con materias disponibles en el frontend.</td>
+      <td>CU-09: Formulario de Inscripción</td>
+      <td>Módulo 2 – Frontend Angular</td>
+      <td>modules/inscripcion/</td>
+      <td>CP-04</td>
+      <td>Eduardo Robles</td>
+      <td><span class="badge pendiente">Pendiente</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-20</strong></td>
+      <td>El sistema debe permitir al profesor registrar calificaciones (parcial1, parcial2, parcial3, final) para cada alumno.</td>
+      <td>CU-10: Registrar Calificaciones</td>
+      <td>Módulo 2 – Backend Calificaciones</td>
+      <td>calificaciones.controller.js<br/>Calificacion.js</td>
+      <td>CP-07</td>
+      <td>Ricardo Galindo</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-21</strong></td>
+      <td>El sistema debe bloquear la modificación de calificaciones cuando el acta esté cerrada por el administrador.</td>
+      <td>CU-11: Cerrar Acta</td>
+      <td>Módulo 2 – Backend Calificaciones</td>
+      <td>calificaciones.controller.js<br/>campo: cerrada</td>
+      <td>CP-07</td>
+      <td>Ricardo Galindo</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-22</strong></td>
+      <td>El sistema debe enviar notificaciones en tiempo real al alumno cuando sus calificaciones sean registradas, usando Socket.io.</td>
+      <td>CU-12: Recibir Notificación</td>
+      <td>Módulo 3 – Socket.io / Notificaciones</td>
+      <td>server.js<br/>calificaciones.controller.js<br/>Notificacion.js</td>
+      <td>CP-08</td>
+      <td>Mariana Jimenez</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-30</strong></td>
+      <td>El sistema debe permitir la gestión de pagos de colegiaturas y trámites, registrando estado y método de pago.</td>
+      <td>CU-13: Gestionar Pago</td>
+      <td>Módulo 3 – Backend Pagos</td>
+      <td>pagos.controller.js<br/>Pago.js</td>
+      <td>CP-09</td>
+      <td>Mariana Jimenez</td>
+      <td><span class="badge en-proceso">En Proceso</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-31</strong></td>
+      <td>El sistema debe generar referencias bancarias SPEI/OXXO descargables en formato PDF usando PDFKit.</td>
+      <td>CU-14: Generar Referencia PDF</td>
+      <td>Módulo 3 – PDF Service</td>
+      <td>pagos.controller.js<br/>POST /api/pagos/referencia</td>
+      <td>CP-10</td>
+      <td>Mariana Jimenez</td>
+      <td><span class="badge en-proceso">En Proceso</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-38</strong></td>
+      <td>El sistema debe mostrar el historial académico completo del alumno (Kardex), agrupado por periodo con promedios calculados.</td>
+      <td>CU-15: Consultar Kardex</td>
+      <td>Módulo 2 – Backend Historial</td>
+      <td>historial.controller.js<br/>GET /api/historial/:alumnoId</td>
+      <td>CP-11</td>
+      <td>Ricardo Galindo</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RF-54</strong></td>
+      <td>El sistema debe soportar pruebas de carga simulando 5,000 usuarios concurrentes contra el endpoint de inscripciones usando Artillery.io.</td>
+      <td>CU-16: Prueba de Carga</td>
+      <td>Módulo 3 – QA / Testing</td>
+      <td>artillery.yml (por crear)</td>
+      <td>CP-12</td>
+      <td>Mariana Jimenez</td>
+      <td><span class="badge pendiente">Pendiente</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- RNF -->
+<h2 class="section">4. Matriz de Trazabilidad — Requerimientos No Funcionales</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width:55px">ID</th>
+      <th style="width:160px">Descripción</th>
+      <th style="width:80px">Categoría</th>
+      <th style="width:130px">Módulo / Componente</th>
+      <th style="width:100px">Archivo(s) Relacionado(s)</th>
+      <th style="width:60px">Prueba Asociada</th>
+      <th style="width:60px">Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>RNF-01</strong></td>
+      <td>Las contraseñas deben almacenarse con hash bcrypt (salt 10) — nunca en texto plano.</td>
+      <td>Seguridad</td>
+      <td>Módulo 1 – Auth</td>
+      <td>auth.controller.js<br/>bcryptjs</td>
+      <td>CP-01</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RNF-02</strong></td>
+      <td>El sistema debe garantizar disponibilidad del 99.9% mediante MongoDB Atlas con réplica de 3 nodos.</td>
+      <td>Disponibilidad</td>
+      <td>Infraestructura – Atlas</td>
+      <td>config/db.js<br/>Atlas Cluster0</td>
+      <td>—</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RNF-03</strong></td>
+      <td>Las notificaciones en tiempo real deben entregarse en menos de 2 segundos desde el registro de calificación.</td>
+      <td>Rendimiento</td>
+      <td>Módulo 3 – Socket.io</td>
+      <td>server.js<br/>calificaciones.controller.js</td>
+      <td>CP-08</td>
+      <td><span class="badge en-proceso">En Proceso</span></td>
+    </tr>
+    <tr>
+      <td><strong>RNF-04</strong></td>
+      <td>La API REST debe responder en menos de 500ms para operaciones CRUD básicas bajo carga normal.</td>
+      <td>Rendimiento</td>
+      <td>Todos los módulos backend</td>
+      <td>server.js<br/>controllers/*</td>
+      <td>CP-12</td>
+      <td><span class="badge en-proceso">En Proceso</span></td>
+    </tr>
+    <tr>
+      <td><strong>RNF-05</strong></td>
+      <td>El sistema debe escalar para soportar 5,000 usuarios concurrentes en el endpoint de inscripciones.</td>
+      <td>Escalabilidad</td>
+      <td>Módulo 3 – QA</td>
+      <td>artillery.yml</td>
+      <td>CP-12</td>
+      <td><span class="badge pendiente">Pendiente</span></td>
+    </tr>
+    <tr>
+      <td><strong>RNF-06</strong></td>
+      <td>El frontend debe implementarse en Angular 17+ con standalone components y lazy loading por módulo.</td>
+      <td>Arquitectura</td>
+      <td>Módulo 1 y 2 – Frontend</td>
+      <td>frontend/src/app/modules/*</td>
+      <td>—</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+    <tr>
+      <td><strong>RNF-07</strong></td>
+      <td>El equipo debe seguir la convención de commits definida (feat/fix/docs/test/chore) en todas las ramas.</td>
+      <td>Proceso</td>
+      <td>Todos los módulos</td>
+      <td>.gitignore<br/>git history</td>
+      <td>—</td>
+      <td><span class="badge finalizado">Finalizado</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ANÁLISIS -->
+<h2 class="section">5. Análisis de la Matriz — Requerimientos sin Relación o sin Evidencia de Validación</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Observación</th>
+      <th>Acción Recomendada</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="highlight">
+      <td><strong>RF-05</strong></td>
+      <td>El dashboard frontend no tiene componente Angular implementado. Los módulos contienen solo archivos .gitkeep.</td>
+      <td>Iniciar desarrollo Angular con ng new y crear componentes de dashboard por rol.</td>
+    </tr>
+    <tr class="highlight">
+      <td><strong>RF-16</strong></td>
+      <td>El formulario de inscripción frontend no tiene implementación. Depende de RF-14 (backend ya completado).</td>
+      <td>Crear componente Angular inscripcion.component que consuma POST /api/inscripciones.</td>
+    </tr>
+    <tr class="highlight">
+      <td><strong>RF-31</strong></td>
+      <td>La generación de PDF con PDFKit está definida en la ruta pero el controlador no tiene la lógica de generación de PDF implementada.</td>
+      <td>Instalar pdfkit y completar el endpoint POST /api/pagos/referencia.</td>
+    </tr>
+    <tr class="highlight">
+      <td><strong>RF-54</strong></td>
+      <td>No existe archivo artillery.yml. La prueba de carga no puede ejecutarse sin configuración.</td>
+      <td>Crear artillery.yml con escenario de 5,000 usuarios contra POST /api/inscripciones.</td>
+    </tr>
+    <tr class="highlight">
+      <td><strong>RNF-03</strong></td>
+      <td>La latencia de Socket.io no ha sido medida formalmente. No existe prueba automatizada que valide &lt;2s.</td>
+      <td>Instrumentar con timestamp en emisión y recepción. Documentar resultado en CP-08.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="footer">
+  USF Portal – Equipo VIP | Actividad 4: Matriz de Trazabilidad | Ingeniería de Software 2026 |
+  Carlos Sanchez G. · Luis Roberto Suarez E. · Ricardo Galindo R. · Eduardo Robles B. · Mariana Jimenez V.
+</div>
+
+</body>
+</html>

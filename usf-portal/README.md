@@ -23,7 +23,7 @@
 | Frontend | Angular 17+ (standalone components, lazy loading) |
 | Backend | Node.js + Express.js |
 | Base de datos | MongoDB (Mongoose como ODM) |
-| Autenticación | Google OAuth 2.0 + JWT |
+| Autenticación | Email + Password + JWT (bcrypt) |
 | Tiempo real | Socket.io (notificaciones push — RF-22) |
 | Pagos | Stripe (RF-30) |
 | PDF | PDFKit (referencias bancarias — RF-31) |
@@ -137,29 +137,30 @@ usf-portal/
 **RFs cubiertos:** RF-01, RF-05  
 **CPs cubiertos:** CP-01, CP-02, CP-03
 
-Gestiona el flujo completo de login con Google OAuth 2.0, generación de JWT y control de acceso por rol (alumno / profesor / admin).
+Gestiona el flujo completo de registro/login con email y contraseña, generación de JWT y control de acceso por rol (alumno / profesor / admin). Las contraseñas se almacenan con hash bcrypt. **No se usa Google OAuth** para simplificar el entorno de desarrollo y evitar dependencias de credenciales externas.
 
 **Flujo de autenticación:**
 ```
-1. Usuario hace clic en "Iniciar sesión con Google"
-2. Angular redirige a /api/auth/google
-3. Passport.js inicia el flujo OAuth con Google
-4. Google devuelve el perfil al callback
-5. Backend busca o crea el usuario en MongoDB
-6. Backend firma un JWT con { id, rol, nombre }
-7. Redirige al frontend con el token en query param
-8. Angular guarda el token en localStorage
-9. Cada request incluye el JWT en el header Authorization
-10. verifyToken.js valida el JWT → req.user disponible
-11. checkRole.js verifica que el rol tenga permiso para esa ruta
+1. Usuario envía POST /api/auth/register con { nombre, email, password, rol }
+2. Backend hashea la contraseña con bcrypt (salt 10)
+3. Guarda el usuario en MongoDB
+4. Devuelve JWT firmado con { id, rol, nombre }
+   — o —
+1. Usuario envía POST /api/auth/login con { email, password }
+2. Backend verifica el hash bcrypt
+3. Si es válido, firma y devuelve JWT
+4. Angular guarda el token en localStorage
+5. Cada request incluye el JWT en el header: Authorization: Bearer <token>
+6. verifyToken.js valida el JWT → req.user disponible
+7. checkRole.js verifica que el rol tenga permiso para esa ruta
 ```
 
 **Endpoints:**
 ```
-POST  /api/auth/google     → Inicia flujo OAuth
-GET   /api/auth/callback   → Callback de Google
-GET   /api/auth/me         → Perfil del usuario autenticado
-POST  /api/auth/logout     → Cerrar sesión
+POST  /api/auth/register   → Registrar nuevo usuario
+POST  /api/auth/login      → Iniciar sesión (devuelve JWT)
+GET   /api/auth/me         → Perfil del usuario autenticado (requiere JWT)
+POST  /api/auth/logout     → Cerrar sesión (client-side: eliminar token)
 ```
 
 ---
@@ -274,8 +275,7 @@ MONGODB_URI=mongodb://localhost:27017/usf_portal
 
 # Autenticación
 JWT_SECRET=tu_secreto_muy_seguro_aqui
-GOOGLE_CLIENT_ID=xxx.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=xxx
+BCRYPT_SALT_ROUNDS=10
 
 # Pagos
 STRIPE_SECRET_KEY=sk_test_xxx
@@ -332,14 +332,27 @@ cd proyectofinalequipoVip/usf-portal
 # 2. Backend
 cd backend
 npm install
-cp .env.example .env   # Completar variables
+cp .env.example .env
+# Editar .env y colocar la MONGODB_URI de tu cluster de Atlas
+# Formato: mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/usf_portal
 npm run dev            # Inicia en localhost:3000
 
-# 3. Frontend (en otra terminal)
+# 3. Verificar conexión
+# Deberías ver en consola: "MongoDB conectado" y "Servidor en puerto 3000"
+
+# 4. Frontend (en otra terminal)
 cd ../frontend
 npm install
 ng serve               # Inicia en localhost:4200
 ```
+
+### Obtener la MONGODB_URI de Atlas
+
+1. En Atlas → tu cluster → botón **Connect**
+2. Seleccionar **Drivers**
+3. Driver: **Node.js**, versión **5.5 or later**
+4. Copiar la connection string y reemplazar `<password>` con tu contraseña de usuario de base de datos
+5. Pegar en el `.env` como `MONGODB_URI=mongodb+srv://...`
 
 ---
 
@@ -348,8 +361,8 @@ ng serve               # Inicia en localhost:4200
 - Node.js 20 LTS
 - Angular CLI (`npm install -g @angular/cli`)
 - MongoDB Community o MongoDB Atlas
-- Cuenta de Google Cloud (para OAuth)
-- Cuenta de Stripe (modo sandbox para desarrollo)
+- Cuenta en MongoDB Atlas (free tier — crear cluster M0)
+- Cuenta de Stripe (modo sandbox para desarrollo, opcional en fase inicial)
 
 ---
 
