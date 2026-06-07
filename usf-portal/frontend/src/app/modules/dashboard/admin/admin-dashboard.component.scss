@@ -1,0 +1,42 @@
+.dashboard-wrapper { min-height: 100vh; background: #f5f7fa; }
+
+.header-usf {
+  background: #0A2540; padding: 0 24px;
+  .header-content { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; height: 64px; gap: 24px; }
+  .logo-text { color: #D4AF37; font-weight: 800; font-size: 1.2rem; flex: 1; }
+  .nav-links a { color: rgba(255,255,255,0.85); text-decoration: none; margin: 0 12px; font-size: 0.9rem; &:hover { color: #D4AF37; } }
+  .btn-logout { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; &:hover { background: #D4AF37; color: #0A2540; } }
+}
+
+.main-content { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+
+.bienvenida { margin-bottom: 32px; h1 { color: #0A2540; margin: 0 0 4px; } p { color: #666; margin: 0; } }
+.seccion-titulo { color: #0A2540; margin-bottom: 20px; }
+
+.metricas-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+
+.metrica-card {
+  border-radius: 16px; padding: 28px; position: relative; overflow: hidden; color: white;
+  &.azul { background: linear-gradient(135deg, #0A2540, #1a3f6f); }
+  &.dorado { background: linear-gradient(135deg, #b8962e, #D4AF37); color: #0A2540; }
+
+  .metrica-numero { font-size: 3rem; font-weight: 800; line-height: 1; }
+  .metrica-label { font-size: 0.9rem; opacity: 0.85; margin-top: 8px; }
+  .metrica-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 3rem; opacity: 0.3; }
+}
+
+.accesos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+
+.acceso-card {
+  background: white; border-radius: 12px; padding: 24px; text-decoration: none; color: inherit;
+  box-shadow: 0 4px 16px rgba(10,37,64,0.08); transition: all 0.3s; border-top: 3px solid #D4AF37; cursor: pointer;
+  &:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(10,37,64,0.15); }
+  &.info { cursor: default; }
+  .acceso-icon { font-size: 2rem; display: block; margin-bottom: 12px; }
+  h3 { margin: 0 0 8px; color: #0A2540; }
+  p { margin: 0; color: #666; font-size: 0.85rem; }
+}
+
+.loader { display: flex; align-items: center; justify-content: center; min-height: 60vh; }
+.spinner { width: 48px; height: 48px; border: 4px solid #D4AF37; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

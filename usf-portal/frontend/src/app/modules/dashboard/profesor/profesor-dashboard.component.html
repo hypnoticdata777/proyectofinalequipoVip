@@ -1,0 +1,51 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Portal</span>
+      <nav class="nav-links">
+        <a routerLink="/calificaciones">Capturar Calificaciones</a>
+      </nav>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content" *ngIf="!cargando">
+    <div class="perfil-card">
+      <img [src]="usuario?.foto || 'assets/default-avatar.png'" [alt]="usuario?.nombre" class="avatar">
+      <div>
+        <h1>Prof. {{ usuario?.nombre }} {{ usuario?.apellido }}</h1>
+        <p>{{ usuario?.email }}</p>
+      </div>
+    </div>
+
+    <h2 class="seccion-titulo">Mis Grupos — Periodo Actual</h2>
+    <div class="grupos-grid">
+      <div class="grupo-card" *ngFor="let materia of materias">
+        <div class="grupo-header">
+          <span class="clave-badge">{{ materia.clave }}</span>
+          <span class="creditos-badge">{{ materia.creditos }} créditos</span>
+        </div>
+        <h3>{{ materia.nombre }}</h3>
+        <div class="horario-info">
+          <span *ngFor="let h of materia.horario" class="horario-item">
+            📅 {{ h.dia }} {{ h.horaInicio }}-{{ h.horaFin }} | {{ h.salon }}
+          </span>
+        </div>
+        <div class="cupo-info">
+          Cupo: {{ materia.cupoDisponible }}/{{ materia.cupoMaximo }} disponibles
+        </div>
+        <a [routerLink]="['/calificaciones']" [queryParams]="{materiaId: materia._id}" class="btn-calificaciones">
+          📝 Capturar Calificaciones
+        </a>
+      </div>
+    </div>
+
+    <div class="sin-materias" *ngIf="materias.length === 0">
+      <p>No tienes materias asignadas en el periodo actual.</p>
+    </div>
+  </main>
+
+  <div class="loader" *ngIf="cargando">
+    <div class="spinner"></div>
+  </div>
+</div>

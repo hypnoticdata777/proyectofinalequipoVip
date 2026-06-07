@@ -1,0 +1,85 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Portal — Calificaciones</span>
+      <a [routerLink]="rolUsuario === 'admin' ? '/dashboard/admin' : '/dashboard/profesor'" class="btn-back">← Volver</a>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="select-materia">
+      <label>Seleccionar Materia:</label>
+      <select [(ngModel)]="materiaSeleccionada" (change)="onMateriaChange()">
+        <option value="">-- Selecciona una materia --</option>
+        <option *ngFor="let m of materias" [value]="m._id">{{ m.clave }} - {{ m.nombre }}</option>
+      </select>
+    </div>
+
+    <div *ngIf="cargandoCalificaciones" class="loader-inline">
+      <div class="spinner-sm"></div> Cargando calificaciones...
+    </div>
+
+    <div *ngIf="!cargandoCalificaciones && calificaciones.length > 0" class="tabla-container">
+      <table class="tabla-calificaciones">
+        <thead>
+          <tr>
+            <th>Alumno</th>
+            <th>Matrícula</th>
+            <th>Parcial 1</th>
+            <th>Parcial 2</th>
+            <th>Parcial 3</th>
+            <th>Final</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cal of calificaciones">
+            <td>{{ cal.alumno?.nombre }} {{ cal.alumno?.apellido }}</td>
+            <td>{{ cal.alumno?.matricula || 'N/A' }}</td>
+            <td>
+              <input *ngIf="!cal.cerrada" type="number" [(ngModel)]="cal.parcial1" min="0" max="100" class="input-calificacion">
+              <span *ngIf="cal.cerrada">{{ cal.parcial1 || '-' }}</span>
+            </td>
+            <td>
+              <input *ngIf="!cal.cerrada" type="number" [(ngModel)]="cal.parcial2" min="0" max="100" class="input-calificacion">
+              <span *ngIf="cal.cerrada">{{ cal.parcial2 || '-' }}</span>
+            </td>
+            <td>
+              <input *ngIf="!cal.cerrada" type="number" [(ngModel)]="cal.parcial3" min="0" max="100" class="input-calificacion">
+              <span *ngIf="cal.cerrada">{{ cal.parcial3 || '-' }}</span>
+            </td>
+            <td>
+              <span [class]="cal.calificacionFinal >= 60 ? 'badge-aprobado' : 'badge-reprobado'" *ngIf="cal.calificacionFinal !== null">
+                {{ cal.calificacionFinal?.toFixed(1) }}
+              </span>
+              <span *ngIf="cal.calificacionFinal === null">-</span>
+            </td>
+            <td>
+              <span class="badge-cerrado" *ngIf="cal.cerrada">Acta Cerrada</span>
+              <span class="badge-abierta" *ngIf="!cal.cerrada">Abierta</span>
+            </td>
+            <td class="acciones-col">
+              <button *ngIf="!cal.cerrada" class="btn-guardar" (click)="guardarCalificacion(cal)" [disabled]="guardando[cal._id]">
+                {{ guardando[cal._id] ? '...' : 'Guardar' }}
+              </button>
+              <span class="msg-guardado" [class.error]="mensajes[cal._id]?.includes('Error')">{{ mensajes[cal._id] }}</span>
+              <button *ngIf="rolUsuario === 'admin' && !cal.cerrada" class="btn-cerrar-acta" (click)="cerrarActa(cal)">
+                Cerrar Acta
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!cargandoCalificaciones && calificaciones.length === 0 && materiaSeleccionada" class="sin-datos">
+      <p>No hay calificaciones registradas para esta materia.</p>
+    </div>
+
+    <div *ngIf="!materiaSeleccionada" class="sin-seleccion">
+      <p>Selecciona una materia para ver las calificaciones.</p>
+    </div>
+  </main>
+</div>

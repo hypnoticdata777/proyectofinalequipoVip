@@ -1,0 +1,56 @@
+@use '@angular/material' as mat;
+
+:root {
+  --color-primario: #0A2540;
+  --color-dorado: #D4AF37;
+  --color-fondo: #f5f7fa;
+  --color-texto: #333333;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+.btn-primario {
+  background-color: var(--color-primario) !important;
+  color: white !important;
+}
+
+.btn-dorado {
+  background-color: var(--color-dorado) !important;
+  color: var(--color-primario) !important;
+  font-weight: 600 !important;
+}
+
+.card-usf {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(10, 37, 64, 0.12) !important;
+}
+
+.badge-aprobado {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.badge-reprobado {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.badge-cerrado {
+  background-color: #e3f2fd;
+  color: #1565c0;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+}

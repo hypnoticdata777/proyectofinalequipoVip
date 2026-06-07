@@ -1,0 +1,101 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Portal</span>
+      <a routerLink="/dashboard/alumno" class="btn-back">← Volver</a>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <h1 class="page-title">Inscripción — Periodo {{ periodoActual }}</h1>
+
+    <div class="alert-error" *ngIf="error">
+      <span class="error-icon">{{ getIconoError() }}</span>
+      <div class="error-body">
+        <strong>{{ tipoError.replace('_', ' ') }}</strong>
+        <p>{{ error }}</p>
+      </div>
+      <button class="btn-cerrar-alert" (click)="error = null">✕</button>
+    </div>
+
+    <div class="alert-exito" *ngIf="exito">
+      <span>✅</span>
+      <p>{{ exito }}</p>
+    </div>
+
+    <div class="inscripcion-layout">
+      <div class="catalogo-section">
+        <h2>Catálogo de Materias</h2>
+        <div *ngIf="cargando" class="loader-inline">
+          <div class="spinner-sm"></div> Cargando materias...
+        </div>
+        <table class="tabla-materias" *ngIf="!cargando">
+          <thead>
+            <tr>
+              <th>Clave</th>
+              <th>Materia</th>
+              <th>Profesor</th>
+              <th>Horario</th>
+              <th>Créditos</th>
+              <th>Cupo</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let materia of materias" [class.seleccionada]="estaSeleccionada(materia._id)">
+              <td>{{ materia.clave }}</td>
+              <td>{{ materia.nombre }}</td>
+              <td>{{ materia.profesor?.nombre }} {{ materia.profesor?.apellido }}</td>
+              <td>
+                <span *ngFor="let h of materia.horario" class="horario-tag">
+                  {{ h.dia.substring(0, 3) }} {{ h.horaInicio }}
+                </span>
+              </td>
+              <td>{{ materia.creditos }}</td>
+              <td>
+                <span [class.sin-cupo]="materia.cupoDisponible === 0">
+                  {{ materia.cupoDisponible }}/{{ materia.cupoMaximo }}
+                </span>
+              </td>
+              <td>
+                <button
+                  class="btn-agregar"
+                  [class.btn-quitar]="estaSeleccionada(materia._id)"
+                  [disabled]="materia.cupoDisponible === 0 && !estaSeleccionada(materia._id)"
+                  (click)="toggleMateria(materia)">
+                  {{ estaSeleccionada(materia._id) ? '✕ Quitar' : '+ Agregar' }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="seleccion-section">
+        <h2>Materias Seleccionadas</h2>
+        <div class="sin-seleccion" *ngIf="materiasSeleccionadas.length === 0">
+          <p>Agrega materias del catálogo</p>
+        </div>
+        <div class="materia-seleccionada-card" *ngFor="let materia of materiasSeleccionadas">
+          <div class="materia-seleccionada-info">
+            <strong>{{ materia.nombre }}</strong>
+            <span>{{ materia.clave }} · {{ materia.creditos }} créditos</span>
+          </div>
+          <button class="btn-eliminar" (click)="toggleMateria(materia)">✕</button>
+        </div>
+
+        <div class="resumen" *ngIf="materiasSeleccionadas.length > 0">
+          <p>{{ materiasSeleccionadas.length }} materias · {{ getTotalCreditos() }} créditos totales</p>
+        </div>
+
+        <button
+          class="btn-confirmar"
+          (click)="confirmarInscripcion()"
+          [disabled]="enviando || materiasSeleccionadas.length === 0 || !!exito">
+          {{ enviando ? 'Procesando...' : '✓ Confirmar Inscripción' }}
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

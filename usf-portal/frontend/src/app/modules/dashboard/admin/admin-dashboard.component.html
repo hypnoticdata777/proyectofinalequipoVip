@@ -1,0 +1,55 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Admin</span>
+      <nav class="nav-links">
+        <a routerLink="/inscripcion">Inscripciones</a>
+        <a routerLink="/calificaciones">Calificaciones</a>
+      </nav>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content" *ngIf="!cargando">
+    <div class="bienvenida">
+      <h1>Panel Administrativo</h1>
+      <p>{{ usuario?.nombre }} {{ usuario?.apellido }} — Administrador</p>
+    </div>
+
+    <div class="metricas-grid">
+      <div class="metrica-card azul">
+        <div class="metrica-numero">{{ metricas.totalInscripciones }}</div>
+        <div class="metrica-label">Inscripciones Activas</div>
+        <div class="metrica-icon">📚</div>
+      </div>
+      <div class="metrica-card dorado">
+        <div class="metrica-numero">{{ metricas.adeudosPendientes }}</div>
+        <div class="metrica-label">Adeudos Pendientes</div>
+        <div class="metrica-icon">⚠️</div>
+      </div>
+    </div>
+
+    <h2 class="seccion-titulo">Accesos Rápidos</h2>
+    <div class="accesos-grid">
+      <a routerLink="/inscripcion" class="acceso-card">
+        <span class="acceso-icon">📋</span>
+        <h3>Gestión de Inscripciones</h3>
+        <p>Ver y administrar todas las inscripciones</p>
+      </a>
+      <a routerLink="/calificaciones" class="acceso-card">
+        <span class="acceso-icon">📊</span>
+        <h3>Gestión de Calificaciones</h3>
+        <p>Cerrar actas y revisar calificaciones</p>
+      </a>
+      <div class="acceso-card info">
+        <span class="acceso-icon">💰</span>
+        <h3>Gestión de Adeudos</h3>
+        <p>Registrar y marcar adeudos como pagados</p>
+      </div>
+    </div>
+  </main>
+
+  <div class="loader" *ngIf="cargando">
+    <div class="spinner"></div>
+  </div>
+</div>
