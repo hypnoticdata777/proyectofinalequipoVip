@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface User {
@@ -14,19 +14,38 @@ export interface User {
   foto?: string;
 }
 
+export interface AuthResponse {
+  token: string;
+  usuario: User;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   private readonly TOKEN_KEY = 'usf_token';
 
-  loginWithGoogle(): void {
-    window.location.href = `${environment.apiUrl}/auth/google`;
+  // RF-01: Login con email/password + JWT
+  login(email: string, password: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password }).pipe(
+      tap((res) => {
+        localStorage.setItem(this.TOKEN_KEY, res.token);
+        this.redirigirSegunRol(res.usuario.rol);
+      })
+    );
   }
 
-  handleCallback(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
-    const rol = this.getUserRole();
+  // RF-02: Registro de usuarios con roles
+  register(datos: { nombre: string; apellido: string; email: string; password: string; rol?: string; matricula?: string }): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, datos).pipe(
+      tap((res) => {
+        localStorage.setItem(this.TOKEN_KEY, res.token);
+        this.redirigirSegunRol(res.usuario.rol);
+      })
+    );
+  }
+
+  private redirigirSegunRol(rol: string): void {
     const rutas: Record<string, string> = {
       alumno: '/dashboard/alumno',
       profesor: '/dashboard/profesor',

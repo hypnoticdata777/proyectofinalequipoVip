@@ -1,12 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const passport = require('passport');
-const { iniciarGoogle, callbackGoogle, getMe, logout } = require('../controllers/auth.controller');
+const { register, login, getMe, logout } = require('../controllers/auth.controller');
 const verifyToken = require('../middleware/verifyToken');
 
-router.get('/google', iniciarGoogle);
-router.get('/google/callback', passport.authenticate('google', { session: false, failureRedirect: '/auth/login' }), callbackGoogle);
+// RF-02: Registro de usuarios con roles
+router.post('/register', register);
+
+// RF-01: Login con email/password + JWT
+router.post('/login', login);
+
+// RF-06: Consultar perfil autenticado
 router.get('/me', verifyToken, getMe);
-router.post('/logout', logout);
+
+router.post('/logout', verifyToken, logout);
 
 module.exports = router;

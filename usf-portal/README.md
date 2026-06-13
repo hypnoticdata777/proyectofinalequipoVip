@@ -23,7 +23,7 @@
 | Frontend | Angular 17+ (standalone components, lazy loading) |
 | Backend | Node.js + Express.js |
 | Base de datos | MongoDB (Mongoose como ODM) |
-| Autenticación | Google OAuth 2.0 + JWT |
+| Autenticación | Email + Password + JWT (bcrypt) |
 | Tiempo real | Socket.io (notificaciones push — RF-22) |
 | Pagos | Stripe (RF-30) |
 | PDF | PDFKit (referencias bancarias — RF-31) |
@@ -137,29 +137,30 @@ usf-portal/
 **RFs cubiertos:** RF-01, RF-05  
 **CPs cubiertos:** CP-01, CP-02, CP-03
 
-Gestiona el flujo completo de login con Google OAuth 2.0, generación de JWT y control de acceso por rol (alumno / profesor / admin).
+Gestiona el flujo completo de login con email/password (bcrypt), generación de JWT y control de acceso por rol (alumno / profesor / admin).
+
+> **Cambio documentado (RF-01 mod.):** Se sustituyó Google OAuth 2.0 por autenticación email/password con bcrypt + JWT para eliminar dependencias externas durante el desarrollo.
 
 **Flujo de autenticación:**
 ```
-1. Usuario hace clic en "Iniciar sesión con Google"
-2. Angular redirige a /api/auth/google
-3. Passport.js inicia el flujo OAuth con Google
-4. Google devuelve el perfil al callback
-5. Backend busca o crea el usuario en MongoDB
-6. Backend firma un JWT con { id, rol, nombre }
-7. Redirige al frontend con el token en query param
-8. Angular guarda el token en localStorage
-9. Cada request incluye el JWT en el header Authorization
-10. verifyToken.js valida el JWT → req.user disponible
-11. checkRole.js verifica que el rol tenga permiso para esa ruta
+1. Usuario ingresa email y contraseña en el formulario
+2. POST /api/auth/login con { email, password }
+3. Backend busca el usuario en MongoDB por email
+4. bcryptjs.compare() valida la contraseña contra el hash
+5. Backend firma un JWT con { id, rol, nombre, email }
+6. Angular guarda el token en localStorage
+7. Cada request incluye el JWT en el header Authorization: Bearer <token>
+8. verifyToken.js valida el JWT → req.user disponible
+9. checkRole.js verifica que el rol tenga permiso para esa ruta
 ```
 
 **Endpoints:**
 ```
-POST  /api/auth/google     → Inicia flujo OAuth
-GET   /api/auth/callback   → Callback de Google
-GET   /api/auth/me         → Perfil del usuario autenticado
+POST  /api/auth/register   → Registro de usuario con bcrypt (RF-02)
+POST  /api/auth/login      → Login email/password + JWT (RF-01)
+GET   /api/auth/me         → Perfil del usuario autenticado (RF-06)
 POST  /api/auth/logout     → Cerrar sesión
+GET   /api/health          → Health check del servidor
 ```
 
 ---

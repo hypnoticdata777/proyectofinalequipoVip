@@ -12,7 +12,7 @@
   border-radius: 20px;
   padding: 48px 40px;
   width: 100%;
-  max-width: 420px;
+  max-width: 460px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   text-align: center;
 }
@@ -57,7 +57,7 @@
 }
 
 .portal-info {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 
   h2 {
     font-size: 1.3rem;
@@ -73,13 +73,73 @@
   }
 }
 
-.btn-google {
+.alert-error {
+  background: #fff0f0;
+  border: 1px solid #ffcccc;
+  color: #c0392b;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.auth-form {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 12px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0A2540;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .optional {
+    font-weight: 400;
+    color: #999;
+    text-transform: none;
+  }
+
+  input, select {
+    padding: 10px 12px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #333;
+    transition: border-color 0.2s;
+    background: white;
+
+    &:focus {
+      outline: none;
+      border-color: #0A2540;
+    }
+
+    &::placeholder {
+      color: #bbb;
+    }
+  }
+}
+
+.btn-primary {
+  margin-top: 8px;
   width: 100%;
-  padding: 14px 24px;
+  padding: 13px 24px;
   background: #0A2540;
   color: white;
   border: none;
@@ -88,26 +148,36 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  letter-spacing: 0.5px;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: #1a3f6f;
     transform: translateY(-2px);
     box-shadow: 0 8px 24px rgba(10, 37, 64, 0.3);
   }
 
-  &:active {
-    transform: translateY(0);
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
-.google-icon {
-  width: 20px;
-  height: 20px;
+.btn-link {
+  display: block;
+  margin-top: 16px;
+  background: none;
+  border: none;
+  color: #1a3f6f;
+  font-size: 0.875rem;
+  cursor: pointer;
+  text-decoration: underline;
+
+  &:hover {
+    color: #0A2540;
+  }
 }
 
 .footer-text {
-  margin-top: 24px;
+  margin-top: 16px;
   color: #999;
   font-size: 0.8rem;
 }

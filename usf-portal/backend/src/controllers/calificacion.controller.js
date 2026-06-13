@@ -1,5 +1,6 @@
 const Calificacion = require('../models/Calificacion');
 const Inscripcion = require('../models/Inscripcion');
+const Notificacion = require('../models/Notificacion');
 
 const getMiGrupo = async (req, res) => {
   try {
@@ -13,9 +14,13 @@ const getMiGrupo = async (req, res) => {
   }
 };
 
+// RF-20 + RF-22: Registrar calificación y emitir notificación en tiempo real
 const actualizarCalificacion = async (req, res) => {
   try {
-    const calificacion = await Calificacion.findById(req.params.id);
+    const calificacion = await Calificacion.findById(req.params.id)
+      .populate('materia', 'nombre clave')
+      .populate('alumno', '_id nombre');
+
     if (!calificacion) return res.status(404).json({ error: 'Calificación no encontrada.' });
     if (calificacion.cerrada) return res.status(403).json({ error: 'El acta está cerrada.' });
 
@@ -25,19 +30,40 @@ const actualizarCalificacion = async (req, res) => {
     if (parcial3 !== undefined) calificacion.parcial3 = parcial3;
     if (calificacionFinal !== undefined) calificacion.calificacionFinal = calificacionFinal;
 
-    // Recalcular promedio automáticamente
     const parciales = [calificacion.parcial1, calificacion.parcial2, calificacion.parcial3].filter(p => p !== null);
     if (parciales.length > 0) {
-      calificacion.calificacionFinal = parciales.reduce((a, b) => a + b, 0) / parciales.length;
+      calificacion.calificacionFinal = Math.round((parciales.reduce((a, b) => a + b, 0) / parciales.length) * 100) / 100;
     }
 
     await calificacion.save();
+
+    // RF-22: Persistir notificación y emitir por Socket.io
+    const alumnoId = calificacion.alumno._id.toString();
+    const notif = await Notificacion.create({
+      usuario: alumnoId,
+      tipo: 'calificacion',
+      titulo: 'Calificación actualizada',
+      mensaje: `Tu calificación en ${calificacion.materia.nombre} ha sido actualizada. Final: ${calificacion.calificacionFinal ?? 'pendiente'}`,
+      meta: { calificacionId: calificacion._id, materiaId: calificacion.materia._id },
+    });
+
+    const io = req.app.get('io');
+    if (io) {
+      io.to(alumnoId).emit('notificacion', {
+        tipo: 'calificacion',
+        titulo: notif.titulo,
+        mensaje: notif.mensaje,
+        timestamp: notif.createdAt,
+      });
+    }
+
     res.json(calificacion);
   } catch (error) {
     res.status(500).json({ error: 'Error al actualizar la calificación.' });
   }
 };
 
+// RF-21: Bloqueo de actas cerradas
 const cerrarActa = async (req, res) => {
   try {
     const calificacion = await Calificacion.findByIdAndUpdate(

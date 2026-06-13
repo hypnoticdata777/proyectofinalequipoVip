@@ -1,0 +1,69 @@
+config:
+  target: "http://localhost:3000"
+  phases:
+    # Rampa inicial: de 0 a 100 usuarios en 60 segundos
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 100
+      name: "Rampa inicial"
+    # Carga sostenida: 500 usuarios/segundo durante 120 segundos
+    - duration: 120
+      arrivalRate: 500
+      name: "Carga sostenida"
+    # Pico máximo: 5000 usuarios concurrentes durante 60 segundos
+    - duration: 60
+      arrivalRate: 5000
+      name: "Pico maximo RNF-05"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+  plugins:
+    metrics-by-endpoint: {}
+
+scenarios:
+  # CP-12: Escenario principal — inscripción de materias (RF-54)
+  - name: "Inscripcion de materias"
+    weight: 70
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "alumno_test@usf.edu.mx"
+            password: "Test1234!"
+          capture:
+            - json: "$.token"
+              as: "token"
+      - post:
+          url: "/api/inscripciones"
+          headers:
+            Authorization: "Bearer {{ token }}"
+          json:
+            materias: []
+            periodo: "2026-1"
+          expect:
+            - statusCode:
+                - 201
+                - 400
+
+  # Health check — validar disponibilidad (RNF-02)
+  - name: "Health check"
+    weight: 20
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+
+  # Login — flujo de autenticación (RF-01)
+  - name: "Login"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "alumno_test@usf.edu.mx"
+            password: "Test1234!"
+          expect:
+            - statusCode:
+                - 200
+                - 401
