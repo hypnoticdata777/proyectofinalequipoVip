@@ -1,37 +1,26 @@
 const Notificacion = require('../models/Notificacion');
 
-const getMisNotificaciones = async (req, res) => {
+const listar = async (req, res) => {
   try {
-    const notificaciones = await Notificacion.find({ usuario: req.user.id })
-      .sort({ createdAt: -1 })
-      .limit(50);
+    const notificaciones = await Notificacion.find({ destinatario_id: req.user.id }).sort({ fecha: -1 });
     res.json(notificaciones);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener notificaciones.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
 const marcarLeida = async (req, res) => {
   try {
-    const notif = await Notificacion.findOneAndUpdate(
-      { _id: req.params.id, usuario: req.user.id },
+    const notif = await Notificacion.findByIdAndUpdate(
+      req.params.id,
       { leida: true },
       { new: true }
     );
-    if (!notif) return res.status(404).json({ error: 'Notificación no encontrada.' });
+    if (!notif) return res.status(404).json({ message: 'Notificación no encontrada' });
     res.json(notif);
-  } catch (error) {
-    res.status(500).json({ error: 'Error al marcar la notificación.' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
-const marcarTodasLeidas = async (req, res) => {
-  try {
-    await Notificacion.updateMany({ usuario: req.user.id, leida: false }, { leida: true });
-    res.json({ mensaje: 'Todas las notificaciones marcadas como leídas.' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar notificaciones.' });
-  }
-};
-
-module.exports = { getMisNotificaciones, marcarLeida, marcarTodasLeidas };
+module.exports = { listar, marcarLeida };

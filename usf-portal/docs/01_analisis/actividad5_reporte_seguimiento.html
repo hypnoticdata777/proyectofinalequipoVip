@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Actividad 5 – Reporte de Seguimiento | Equipo VIP</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; font-size: 10px; color: #1a1a1a; background: #fff; padding: 20px; }
+
+  .portada { text-align: center; padding: 60px 20px; page-break-after: always; }
+  .portada h1 { font-size: 22px; color: #003366; margin-bottom: 10px; }
+  .portada h2 { font-size: 16px; color: #003366; margin-bottom: 30px; }
+  .portada .materia { font-size: 13px; margin-bottom: 6px; }
+  .portada .equipo { margin-top: 40px; }
+  .portada .equipo h3 { font-size: 14px; color: #003366; margin-bottom: 14px; border-bottom: 2px solid #003366; padding-bottom: 6px; }
+  .portada .integrante { font-size: 12px; margin: 8px 0; font-weight: bold; }
+  .portada .fecha { margin-top: 40px; font-size: 11px; color: #555; }
+  .logo-text { font-size: 28px; font-weight: 900; color: #003366; letter-spacing: 2px; margin-bottom: 6px; }
+  .logo-sub { font-size: 11px; color: #666; letter-spacing: 4px; }
+
+  h2.section { font-size: 13px; color: #003366; border-left: 4px solid #003366; padding-left: 10px; margin: 20px 0 8px 0; }
+  h3.subsection { font-size: 11px; color: #00509e; margin: 14px 0 6px 0; }
+  p { font-size: 10px; margin-bottom: 8px; line-height: 1.65; }
+  ul { font-size: 10px; margin: 6px 0 10px 18px; line-height: 1.7; }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 9px; }
+  th { background: #003366; color: #fff; padding: 6px 4px; text-align: center; border: 1px solid #ccc; }
+  td { padding: 5px 4px; border: 1px solid #ccc; vertical-align: top; }
+  tr:nth-child(even) { background: #f0f4f8; }
+
+  .badge { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 8px; font-weight: bold; color: #fff; }
+  .finalizado { background: #27ae60; }
+  .en-proceso { background: #e67e22; }
+  .pendiente  { background: #c0392b; }
+  .modificado { background: #8e44ad; }
+
+  .kpi-row { display: flex; gap: 10px; margin: 12px 0; }
+  .kpi { flex: 1; border: 1px solid #ddd; border-radius: 6px; padding: 10px; text-align: center; }
+  .kpi .num { font-size: 26px; font-weight: 900; color: #003366; }
+  .kpi .label { font-size: 9px; color: #555; }
+  .kpi.green .num { color: #27ae60; }
+  .kpi.orange .num { color: #e67e22; }
+  .kpi.red .num { color: #c0392b; }
+  .kpi.purple .num { color: #8e44ad; }
+
+  .impacto-alto { background: #fdecea !important; }
+  .impacto-medio { background: #fff8e1 !important; }
+  .impacto-bajo { background: #e8f5e9 !important; }
+
+  .evidence-box { border: 1px solid #003366; border-radius: 4px; padding: 10px; margin: 10px 0; background: #f7faff; font-family: monospace; font-size: 9px; line-height: 1.6; }
+  .evidence-box .label { font-weight: bold; color: #003366; margin-bottom: 4px; display: block; }
+
+  .footer { margin-top: 30px; font-size: 8px; color: #999; text-align: center; border-top: 1px solid #ddd; padding-top: 10px; }
+  .page-break { page-break-before: always; }
+
+  .conclusion-box { border-left: 4px solid #27ae60; padding: 10px 14px; background: #f0faf4; margin: 10px 0; }
+  .risk-box { border-left: 4px solid #e67e22; padding: 10px 14px; background: #fff8f0; margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="portada">
+  <div class="logo-text">USF PORTAL</div>
+  <div class="logo-sub">SISTEMA ESCOLAR INTEGRAL</div>
+  <br/><br/>
+  <h1>Actividad 5</h1>
+  <h2>Reporte de Seguimiento de Requerimientos</h2>
+  <div class="materia">Trazabilidad y Configuración de Software — Ciclo 2026-0</div>
+  <div class="materia">Profesor: Rafael Bernal Gallegos</div>
+  <div class="equipo">
+    <h3>EQUIPO VIP</h3>
+    <div class="integrante">CARLOS SANCHEZ GONZALEZ</div>
+    <div class="integrante">LUIS ROBERTO SUAREZ ESQUIVEL</div>
+    <div class="integrante">RICARDO GALINDO RODRIGUEZ</div>
+    <div class="integrante">EDUARDO ROBLES BARCENAS</div>
+    <div class="integrante">MARIANA JIMENEZ VALDEZ</div>
+  </div>
+  <div class="fecha">Fecha de entrega: 06 de Junio de 2026</div>
+</div>
+
+<!-- SECCIÓN 1 -->
+<h2 class="section">1. Introducción</h2>
+<p>
+El presente reporte documenta el seguimiento de requerimientos del proyecto <strong>USF Portal</strong>, aplicando las técnicas de trazabilidad elaboradas en la Actividad 4. El objetivo es verificar el cumplimiento de cada requerimiento, identificar cambios ocurridos durante el desarrollo, analizar el impacto de dichos cambios en el sistema y presentar evidencias del estado actual de la implementación al cierre del presente ciclo de entrega.
+</p>
+<p>
+El seguimiento fue realizado en base al estado real del repositorio del proyecto (<code>github.com/hypnoticdata777/proyectofinalequipoVip</code>) al día de la entrega, considerando los archivos de código fuente, commits registrados y conexión activa a la base de datos MongoDB Atlas (Cluster0, AWS us-east-1).
+</p>
+
+<!-- SECCIÓN 2: KPIs -->
+<h2 class="section">2. Estado General del Proyecto</h2>
+
+<div class="kpi-row">
+  <div class="kpi green"><div class="num">13</div><div class="label">Reqs. Implementados</div></div>
+  <div class="kpi orange"><div class="num">5</div><div class="label">Reqs. En Proceso</div></div>
+  <div class="kpi red"><div class="num">4</div><div class="label">Reqs. Pendientes</div></div>
+  <div class="kpi purple"><div class="num">2</div><div class="label">Reqs. Modificados</div></div>
+</div>
+
+<p>Del total de 22 requerimientos identificados (15 funcionales + 7 no funcionales), el <strong>59%</strong> se encuentran completamente implementados, el <strong>23%</strong> están en proceso, y el <strong>18%</strong> permanecen pendientes para la siguiente iteración.</p>
+
+<!-- SECCIÓN 3 -->
+<h2 class="section">3. Requerimientos Implementados (Finalizados)</h2>
+<p>Los siguientes requerimientos cuentan con implementación completa, código en repositorio y prueba de conexión exitosa con MongoDB Atlas:</p>
+
+<table>
+  <thead>
+    <tr><th>ID</th><th>Descripción</th><th>Evidencia de Implementación</th><th>Módulo</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>RF-01</strong></td>
+      <td>Login con email/password + JWT</td>
+      <td>POST /api/auth/login — retorna token firmado. bcryptjs.compare() valida contraseña.</td>
+      <td>M1-Backend</td>
+    </tr>
+    <tr>
+      <td><strong>RF-02</strong></td>
+      <td>Registro de usuarios con roles</td>
+      <td>POST /api/auth/register — crea usuario con hash bcrypt. Validación de email único.</td>
+      <td>M1-Backend</td>
+    </tr>
+    <tr>
+      <td><strong>RF-03</strong></td>
+      <td>Validación de token JWT</td>
+      <td>Middleware verifyToken.js — extrae Bearer token, verifica con jwt.verify().</td>
+      <td>M1-Middleware</td>
+    </tr>
+    <tr>
+      <td><strong>RF-04</strong></td>
+      <td>Control de acceso por rol</td>
+      <td>Middleware checkRole.js — compara req.user.rol con roles permitidos por endpoint.</td>
+      <td>M1-Middleware</td>
+    </tr>
+    <tr>
+      <td><strong>RF-06</strong></td>
+      <td>Consultar perfil autenticado</td>
+      <td>GET /api/auth/me — retorna usuario sin campo password. Requiere JWT válido.</td>
+      <td>M1-Backend</td>
+    </tr>
+    <tr>
+      <td><strong>RF-14</strong></td>
+      <td>Inscripción de materias</td>
+      <td>POST /api/inscripciones — llama a ejecutarInscripcion(). Crea registro en MongoDB.</td>
+      <td>M2-Backend</td>
+    </tr>
+    <tr>
+      <td><strong>RF-15</strong></td>
+      <td>4 validaciones de inscripción</td>
+      <td>inscripcion.service.js — verificarSinAdeudos(), verificarCupo(), verificarSeriacion(), verificarHorario().</td>
+      <td>M2-Service</td>
+    </tr>
+    <tr>
+      <td><strong>RF-20</strong></td>
+      <td>Registro de calificaciones</td>
+      <td>PUT /api/calificaciones/:id — verifica acta no cerrada, actualiza parciales y final.</td>
+      <td>M2-Backend</td>
+    </tr>
+    <tr>
+      <td><strong>RF-21</strong></td>
+      <td>Bloqueo de actas cerradas</td>
+      <td>Campo cerrada: Boolean en Calificacion.js. Controller retorna 403 si cerrada === true.</td>
+      <td>M2-Backend</td>
+    </tr>
+    <tr>
+      <td><strong>RF-22</strong></td>
+      <td>Notificaciones tiempo real</td>
+      <td>Socket.io configurado en server.js. Al registrar calificación, io.to(user_id).emit().</td>
+      <td>M3-Backend</td>
+    </tr>
+    <tr>
+      <td><strong>RF-38</strong></td>
+      <td>Historial académico / Kardex</td>
+      <td>GET /api/historial/:alumnoId — agrupa calificaciones por periodo, calcula promedios.</td>
+      <td>M2-Backend</td>
+    </tr>
+    <tr>
+      <td><strong>RNF-01</strong></td>
+      <td>Hash bcrypt para contraseñas</td>
+      <td>bcryptjs con salt 10 en registro. Contraseña excluida de respuestas con .select('-password').</td>
+      <td>M1-Seguridad</td>
+    </tr>
+    <tr>
+      <td><strong>RNF-02</strong></td>
+      <td>Alta disponibilidad MongoDB</td>
+      <td>Atlas Cluster0 — Replica Set 3 nodos, AWS us-east-1. Conexión verificada: ac-q1c3u6b-shard-00-02.</td>
+      <td>Infraestructura</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECCIÓN 4 -->
+<div class="page-break"></div>
+<h2 class="section">4. Requerimientos Pendientes</h2>
+<p>Los siguientes requerimientos no han sido iniciados en el periodo actual. Se planifican para la siguiente iteración de desarrollo:</p>
+
+<table>
+  <thead>
+    <tr><th>ID</th><th>Descripción</th><th>Motivo de Pendiente</th><th>Responsable</th><th>Prioridad</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>RF-05</strong></td>
+      <td>Dashboard diferenciado por rol (Frontend)</td>
+      <td>Angular aún no está inicializado. Requiere ng new y creación de componentes por rol.</td>
+      <td>Luis Roberto Suarez</td>
+      <td>Alta</td>
+    </tr>
+    <tr>
+      <td><strong>RF-16</strong></td>
+      <td>Formulario de inscripción (Frontend)</td>
+      <td>Depende de RF-05. Backend listo; falta consumir API desde Angular.</td>
+      <td>Eduardo Robles</td>
+      <td>Alta</td>
+    </tr>
+    <tr>
+      <td><strong>RF-54</strong></td>
+      <td>Prueba de carga con Artillery</td>
+      <td>No existe configuración artillery.yml. Requiere instalación y diseño del escenario.</td>
+      <td>Mariana Jimenez</td>
+      <td>Media</td>
+    </tr>
+    <tr>
+      <td><strong>RNF-05</strong></td>
+      <td>Soporte para 5,000 usuarios concurrentes</td>
+      <td>Depende de RF-54. Sin prueba de carga no se puede validar este requerimiento.</td>
+      <td>Mariana Jimenez</td>
+      <td>Media</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECCIÓN 5 -->
+<h2 class="section">5. Requerimientos En Proceso</h2>
+
+<table>
+  <thead>
+    <tr><th>ID</th><th>Descripción</th><th>Avance Actual</th><th>Faltante</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>RF-30</strong></td>
+      <td>Gestión de pagos</td>
+      <td>Modelo Pago.js completo. CRUD básico en pagos.controller.js. Rutas definidas.</td>
+      <td>Integración con Stripe PaymentIntent. Webhook de confirmación.</td>
+    </tr>
+    <tr>
+      <td><strong>RF-31</strong></td>
+      <td>Referencias bancarias PDF</td>
+      <td>Ruta POST /api/pagos/referencia definida. Generación de referencia con timestamp.</td>
+      <td>Instalar pdfkit. Implementar generación de PDF con datos del pago.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF-03</strong></td>
+      <td>Latencia de notificación &lt;2s</td>
+      <td>Socket.io implementado y funcional. Eventos emitidos en calificaciones.</td>
+      <td>Medir y documentar latencia real con prueba instrumentada.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF-04</strong></td>
+      <td>Respuesta API &lt;500ms</td>
+      <td>API corriendo. Sin herramienta de medición implementada.</td>
+      <td>Implementar middleware de timing o usar Artillery para medir tiempos de respuesta.</td>
+    </tr>
+    <tr>
+      <td><strong>RNF-06</strong></td>
+      <td>Frontend Angular 17+ con lazy loading</td>
+      <td>Estructura de carpetas definida con módulos correctos.</td>
+      <td>Ejecutar ng new, configurar app.routes.ts con lazy loading por módulo.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECCIÓN 6 -->
+<h2 class="section">6. Requerimientos Modificados</h2>
+<p>Durante el desarrollo se detectaron los siguientes cambios respecto al diseño original del sistema:</p>
+
+<table>
+  <thead>
+    <tr><th>ID</th><th>Cambio Detectado</th><th>Motivo del Cambio</th><th>Impacto en el Sistema</th></tr>
+  </thead>
+  <tbody>
+    <tr class="impacto-medio">
+      <td><strong>RF-01<br/>(mod.)</strong></td>
+      <td>Se sustituyó Google OAuth 2.0 por autenticación email/password con bcrypt + JWT.</td>
+      <td>Google OAuth requiere credenciales de Google Cloud y configuración de dominio de callback, lo que generaría dependencias externas que retrasarían el desarrollo. Se priorizó la funcionalidad sobre la integración externa.</td>
+      <td>
+        <strong>Impacto Medio.</strong> La funcionalidad de autenticación se mantiene íntegra. El flujo de login cambia pero el resultado (token JWT + roles) es idéntico. El frontend deberá mostrar formulario email/password en lugar del botón "Sign in with Google". RF-05 no se ve afectado. Se elimina la dependencia de Passport.js (no se instala).
+      </td>
+    </tr>
+    <tr class="impacto-bajo">
+      <td><strong>RNF-07<br/>(mod.)</strong></td>
+      <td>Se agregó la convención de commits con prefijos (feat/fix/docs/test/chore) durante el desarrollo, no estaba en el diseño inicial de la matriz.</td>
+      <td>Necesidad de mantener trazabilidad en git history y facilitar la integración de ramas de los cinco integrantes.</td>
+      <td>
+        <strong>Impacto Bajo.</strong> Solo afecta el proceso de desarrollo. No impacta ningún módulo funcional del sistema. Mejora la mantenibilidad del repositorio.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECCIÓN 7 -->
+<h2 class="section">7. Relaciones entre Requerimientos, Casos de Uso, Módulos y Pruebas</h2>
+
+<table>
+  <thead>
+    <tr><th>Requerimiento</th><th>Depende de</th><th>Afecta a</th><th>Caso de Uso</th><th>Prueba</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>RF-01 (Login)</td><td>RNF-01 (bcrypt)</td><td>RF-03, RF-04, RF-05, RF-06</td><td>CU-01</td><td>CP-01, CP-02</td></tr>
+    <tr><td>RF-02 (Registro)</td><td>RNF-01 (bcrypt)</td><td>RF-01</td><td>CU-02</td><td>CP-01</td></tr>
+    <tr><td>RF-14 (Inscripción)</td><td>RF-01, RF-03, RF-04, RF-15</td><td>RF-30 (adeudos), RF-20 (materias)</td><td>CU-07, CU-08</td><td>CP-04, CP-05, CP-06</td></tr>
+    <tr><td>RF-15 (Validaciones)</td><td>RF-14, RF-30</td><td>RF-14 (confirmación)</td><td>CU-08</td><td>CP-05, CP-06</td></tr>
+    <tr><td>RF-20 (Calificaciones)</td><td>RF-01, RF-03, RF-04</td><td>RF-22 (notif), RF-38 (historial)</td><td>CU-10, CU-11</td><td>CP-07</td></tr>
+    <tr><td>RF-22 (Socket.io)</td><td>RF-20</td><td>RNF-03 (latencia)</td><td>CU-12</td><td>CP-08</td></tr>
+    <tr><td>RF-30 (Pagos)</td><td>RF-01, RF-03</td><td>RF-15 (valida adeudos), RF-31</td><td>CU-13</td><td>CP-09</td></tr>
+    <tr><td>RF-38 (Kardex)</td><td>RF-20</td><td>—</td><td>CU-15</td><td>CP-11</td></tr>
+    <tr><td>RF-54 (Carga)</td><td>RF-14</td><td>RNF-04, RNF-05</td><td>CU-16</td><td>CP-12</td></tr>
+  </tbody>
+</table>
+
+<!-- SECCIÓN 8: EVIDENCIAS -->
+<div class="page-break"></div>
+<h2 class="section">8. Evidencias del Análisis</h2>
+
+<h3 class="subsection">8.1 Conexión exitosa a MongoDB Atlas</h3>
+<div class="evidence-box">
+  <span class="label">Terminal — npm run dev (Evidencia de ejecución exitosa)</span>
+  [nodemon] 3.1.14<br/>
+  [nodemon] starting `node server.js`<br/>
+  <strong>Servidor en puerto 3000</strong><br/>
+  <strong>MongoDB conectado: ac-q1c3u6b-shard-00-02.6azjumv.mongodb.net</strong>
+</div>
+
+<h3 class="subsection">8.2 Health check de la API</h3>
+<div class="evidence-box">
+  <span class="label">GET http://localhost:3000/api/health — Respuesta del servidor</span>
+  &#123;"status":"ok","message":"USF Portal API corriendo"&#125;
+</div>
+
+<h3 class="subsection">8.3 Estructura de archivos del backend (implementados)</h3>
+<div class="evidence-box">
+  <span class="label">usf-portal/backend/ — Árbol de archivos generados</span>
+  ├── server.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← Entry point Express + Socket.io<br/>
+  ├── package.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← Dependencias: express, mongoose, bcryptjs, jsonwebtoken, socket.io<br/>
+  ├── .env &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← MONGODB_URI, JWT_SECRET configurados<br/>
+  └── src/<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;├── config/db.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← Conexión Mongoose a Atlas<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;├── models/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← User, Materia, Inscripcion, Calificacion, Pago, Notificacion<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;├── middleware/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← verifyToken.js, checkRole.js<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;├── routes/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← auth, materias, inscripciones, calificaciones, historial, pagos, notificaciones<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;├── controllers/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← 7 controladores (uno por recurso)<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;└── services/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← inscripcion.service.js (4 validaciones)
+</div>
+
+<h3 class="subsection">8.4 Configuración de Atlas (Cluster0)</h3>
+<div class="evidence-box">
+  <span class="label">MongoDB Atlas — Datos del cluster verificados</span>
+  Organización : Carlos's Org - 2026-0<br/>
+  Proyecto &nbsp;&nbsp;&nbsp;&nbsp;: Project 0<br/>
+  Cluster &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Cluster0 (FREE / M0)<br/>
+  Versión &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: MongoDB 8.0.24<br/>
+  Región &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: AWS / N. Virginia (us-east-1)<br/>
+  Tipo &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: Replica Set - 3 nodos<br/>
+  IP Autorizada: 0.0.0.0/0 (desarrollo) + 200.76.118.47/32 (IP del equipo)<br/>
+  Base de datos: usf_portal
+</div>
+
+<h3 class="subsection">8.5 Cambio detectado — Sustitución de Google OAuth</h3>
+<div class="evidence-box">
+  <span class="label">README.md — Línea modificada (trazabilidad del cambio)</span>
+  ANTES: | Autenticación | Google OAuth 2.0 + JWT |<br/>
+  DESPUÉS: | Autenticación | Email + Password + JWT (bcrypt) |<br/><br/>
+  Motivo: Simplificación del entorno de desarrollo. Sin dependencia de credenciales externas.<br/>
+  Impacto: Ningún requerimiento de negocio eliminado. Login/registro siguen funcionando con JWT.
+</div>
+
+<!-- SECCIÓN 9 -->
+<h2 class="section">9. Impacto de los Cambios en el Sistema</h2>
+
+<table>
+  <thead>
+    <tr><th>Cambio</th><th>Componentes Afectados</th><th>Nivel de Impacto</th><th>Acción Tomada</th></tr>
+  </thead>
+  <tbody>
+    <tr class="impacto-medio">
+      <td>Sustitución Google OAuth → Email/Password</td>
+      <td>auth.controller.js, auth.routes.js, módulo frontend auth/, README.md</td>
+      <td>Medio — Solo afecta UX del login. Flujo JWT idéntico.</td>
+      <td>Se actualizó README, se implementó bcrypt+JWT. Frontend deberá mostrar form en lugar de botón Google.</td>
+    </tr>
+    <tr class="impacto-bajo">
+      <td>Frontend aún no inicializado</td>
+      <td>Todos los módulos Angular (RF-05, RF-16)</td>
+      <td>Alto en entrega — Bajo en funcionalidad backend.</td>
+      <td>Backend completo y probado. Frontend planificado para siguiente sprint.</td>
+    </tr>
+    <tr class="impacto-bajo">
+      <td>PDF/Stripe en proceso</td>
+      <td>pagos.controller.js (RF-30, RF-31)</td>
+      <td>Medio — Pagos básicos funcionan sin Stripe.</td>
+      <td>Se implementó generación de referencia local. Stripe se integrará en siguiente iteración.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- SECCIÓN 10 -->
+<h2 class="section">10. Conclusiones</h2>
+
+<div class="conclusion-box">
+  <strong>Logros del periodo:</strong> El backend del sistema USF Portal fue implementado en su totalidad para los módulos de autenticación, núcleo académico e infraestructura de notificaciones. Los 6 modelos Mongoose están definidos y conectados a MongoDB Atlas. Las 4 validaciones críticas de inscripción (RF-15) están implementadas y funcionales en la capa de servicios. El servidor responde correctamente en el endpoint de health check y la conexión a Atlas está verificada y estable.
+</div>
+
+<div class="risk-box">
+  <strong>Riesgos identificados:</strong>
+  <ul>
+    <li>El frontend Angular aún no está inicializado, lo que representa el riesgo principal para la entrega completa del sistema. Se requiere al menos inicializar el proyecto y crear el módulo de auth para poder hacer una demo end-to-end.</li>
+    <li>La integración con Stripe (RF-30) requiere una cuenta de sandbox que aún no ha sido configurada por el equipo.</li>
+    <li>La prueba de carga (RF-54) con Artillery no puede validarse sin el archivo de configuración correspondiente.</li>
+    <li>La latencia de Socket.io (RNF-03) no ha sido medida formalmente — existe el riesgo de no cumplir el objetivo de &lt;2s sin una prueba instrumentada.</li>
+  </ul>
+</div>
+
+<div class="conclusion-box">
+  <strong>Plan para la siguiente iteración:</strong>
+  <ul>
+    <li>Inicializar proyecto Angular (ng new frontend) y crear módulo auth con formulario de login/registro.</li>
+    <li>Implementar dashboard por rol consumiendo GET /api/auth/me.</li>
+    <li>Instalar pdfkit y completar generación de referencias bancarias.</li>
+    <li>Crear artillery.yml y ejecutar prueba de carga documentando resultados.</li>
+    <li>Medir y documentar latencia de Socket.io en escenario controlado.</li>
+  </ul>
+</div>
+
+<div class="footer">
+  USF Portal – Equipo VIP | Actividad 5: Reporte de Seguimiento de Requerimientos | Ingeniería de Software 2026 |
+  Carlos Sanchez G. · Luis Roberto Suarez E. · Ricardo Galindo R. · Eduardo Robles B. · Mariana Jimenez V.
+</div>
+
+</body>
+</html>

@@ -1,67 +1,50 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
-const cors = require('cors');
-const connectDB = require('./src/config/database');
-const timingMiddleware = require('./src/middleware/timing');
-
-const authRoutes = require('./src/routes/auth.routes');
-const materiaRoutes = require('./src/routes/materia.routes');
-const inscripcionRoutes = require('./src/routes/inscripcion.routes');
-const calificacionRoutes = require('./src/routes/calificacion.routes');
-const historialRoutes = require('./src/routes/historial.routes');
-const adeudoRoutes = require('./src/routes/adeudo.routes');
-const pagosRoutes = require('./src/routes/pagos.routes');
-const notificacionesRoutes = require('./src/routes/notificaciones.routes');
+const connectDB = require('./src/config/db');
 
 const app = express();
-const server = http.createServer(app);
-
-// RF-22: Socket.io para notificaciones en tiempo real
-const io = new Server(server, {
-  cors: { origin: process.env.FRONTEND_URL || 'http://localhost:4200', credentials: true },
+const httpServer = http.createServer(app);
+const io = new Server(httpServer, {
+  cors: { origin: 'http://localhost:4200', methods: ['GET', 'POST'] }
 });
 
+// Conexión a MongoDB
+connectDB();
+
+// Middleware
+app.use(cors({ origin: 'http://localhost:4200' }));
+app.use(express.json());
+
+// Hacer io accesible desde los controladores
 app.set('io', io);
 
-io.on('connection', (socket) => {
-  socket.on('join', (userId) => {
-    socket.join(userId);
-  });
-  socket.on('disconnect', () => {});
-});
-
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:4200', credentials: true }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// RNF-04: Middleware de timing para medir latencia de respuestas
-app.use(timingMiddleware);
+// Rutas
+app.use('/api/auth', require('./src/routes/auth.routes'));
+app.use('/api/materias', require('./src/routes/materias.routes'));
+app.use('/api/inscripciones', require('./src/routes/inscripciones.routes'));
+app.use('/api/calificaciones', require('./src/routes/calificaciones.routes'));
+app.use('/api/historial', require('./src/routes/historial.routes'));
+app.use('/api/pagos', require('./src/routes/pagos.routes'));
+app.use('/api/notificaciones', require('./src/routes/notificaciones.routes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'USF Portal API corriendo' });
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/materias', materiaRoutes);
-app.use('/api/inscripciones', inscripcionRoutes);
-app.use('/api/calificaciones', calificacionRoutes);
-app.use('/api/historial', historialRoutes);
-app.use('/api/adeudos', adeudoRoutes);
-app.use('/api/pagos', pagosRoutes);
-app.use('/api/notificaciones', notificacionesRoutes);
+// Socket.io — autenticación por sala de usuario
+io.on('connection', (socket) => {
+  socket.on('join', (userId) => {
+    socket.join(`user_${userId}`);
+  });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: err.message || 'Error interno del servidor.' });
+  socket.on('disconnect', () => {});
 });
 
 const PORT = process.env.PORT || 3000;
-
-connectDB().then(() => {
-  server.listen(PORT, () => console.log(`Servidor en puerto ${PORT}`));
+httpServer.listen(PORT, () => {
+  console.log(`Servidor en puerto ${PORT}`);
 });
-
-module.exports = { app, io };

@@ -1,21 +1,23 @@
 const mongoose = require('mongoose');
 
+const horarioSchema = new mongoose.Schema({
+  dia:        { type: String, required: true },
+  horaInicio: { type: String, required: true },
+  horaFin:    { type: String, required: true },
+  salon:      { type: String }
+}, { _id: false });
+
 const materiaSchema = new mongoose.Schema({
-  clave: { type: String, required: true, unique: true },
-  nombre: { type: String, required: true },
-  creditos: { type: Number, required: true },
-  cupoMaximo: { type: Number, required: true },
+  clave:          { type: String, required: true, unique: true },
+  nombre:         { type: String, required: true },
+  creditos:       { type: Number, required: true },
+  cupoMaximo:     { type: Number, required: true },
   cupoDisponible: { type: Number, required: true },
-  horario: [{
-    dia: { type: String, enum: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'] },
-    horaInicio: String,
-    horaFin: String,
-    salon: String,
-  }],
-  seriacion: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Materia' }],
-  profesor: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  periodo: { type: String, required: true },
-  activa: { type: Boolean, default: true },
+  horario:        [horarioSchema],
+  seriacion:      [{ type: mongoose.Schema.Types.ObjectId, ref: 'Materia' }],
+  profesor_id:    { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  periodo:        { type: String, required: true },
+  activa:         { type: Boolean, default: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Materia', materiaSchema);

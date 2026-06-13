@@ -1,12 +1,8 @@
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
+const { listar, marcarLeida } = require('../controllers/notificaciones.controller');
 const verifyToken = require('../middleware/verifyToken');
-const { getMisNotificaciones, marcarLeida, marcarTodasLeidas } = require('../controllers/notificaciones.controller');
 
-router.use(verifyToken);
-
-router.get('/', getMisNotificaciones);
-router.put('/leidas', marcarTodasLeidas);
-router.put('/:id/leida', marcarLeida);
+router.get('/', verifyToken, listar);
+router.put('/:id/leer', verifyToken, marcarLeida);
 
 module.exports = router;
