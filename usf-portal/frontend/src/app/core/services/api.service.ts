@@ -27,4 +27,8 @@ export class ApiService {
   getBlob(endpoint: string): Observable<Blob> {
     return this.http.get(`${this.base}/${endpoint}`, { responseType: 'blob' });
   }
+
+  delete<T>(endpoint: string): Observable<T> {
+    return this.http.delete<T>(`${this.base}/${endpoint}`);
+  }
 }

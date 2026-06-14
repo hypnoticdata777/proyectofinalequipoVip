@@ -41,4 +41,16 @@ const cancelar = async (req, res) => {
   }
 };
 
-module.exports = { inscribir, obtener, cancelar };
+const obtenerTodas = async (req, res) => {
+  try {
+    const inscripciones = await Inscripcion.find()
+      .populate('alumno_id', 'nombre apellido matricula email')
+      .populate('materias', 'clave nombre creditos')
+      .sort({ createdAt: -1 });
+    res.json(inscripciones);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { inscribir, obtener, cancelar, obtenerTodas };

@@ -1,0 +1,60 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Admin — Inscripciones</span>
+      <a routerLink="/dashboard/admin" class="btn-back">← Volver</a>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <h1 class="page-title">Gestión de Inscripciones</h1>
+
+    <div *ngIf="cargando" class="loader-inline">
+      <div class="spinner-sm"></div> Cargando inscripciones...
+    </div>
+
+    <div *ngIf="error" class="sin-datos">
+      <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!cargando && !error && inscripciones.length > 0" class="tabla-container">
+      <table class="tabla-calificaciones">
+        <thead>
+          <tr>
+            <th>Alumno</th>
+            <th>Matrícula</th>
+            <th>Email</th>
+            <th>Periodo</th>
+            <th>Materias</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ins of inscripciones">
+            <td>{{ ins.alumno_id?.nombre }} {{ ins.alumno_id?.apellido }}</td>
+            <td>{{ ins.alumno_id?.matricula || 'N/A' }}</td>
+            <td>{{ ins.alumno_id?.email }}</td>
+            <td>{{ ins.periodo }}</td>
+            <td>{{ ins.materias?.length || 0 }} materias</td>
+            <td>
+              <span [class]="ins.estado === 'activa' ? 'badge-aprobado' : 'badge-reprobado'">
+                {{ ins.estado }}
+              </span>
+            </td>
+            <td>
+              <button *ngIf="ins.estado === 'activa'" class="btn-cerrar-acta" (click)="cancelarInscripcion(ins._id)">
+                Cancelar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!cargando && !error && inscripciones.length === 0" class="sin-datos">
+      <p>No hay inscripciones registradas.</p>
+    </div>
+  </main>
+</div>

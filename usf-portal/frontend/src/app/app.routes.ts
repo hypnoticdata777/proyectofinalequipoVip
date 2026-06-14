@@ -66,5 +66,13 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./modules/historial/historial.component').then(m => m.HistorialComponent),
   },
+
+  {
+  path: 'inscripciones-admin',
+  canActivate: [authGuard, roleGuard],
+  data: { roles: ['admin'] },
+  loadComponent: () => import('./modules/inscripciones-admin/inscripciones-admin.component').then(m => m.InscripcionesAdminComponent),
+},
+
   { path: '**', redirectTo: 'auth/login' },
 ];
