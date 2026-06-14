@@ -27,7 +27,7 @@ const register = async (req, res) => {
 
     res.status(201).json({
       token,
-      user: { id: user._id, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol }
+      usuario: { id: user._id, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol }
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -55,7 +55,7 @@ const login = async (req, res) => {
     const token = generarToken(user);
     res.json({
       token,
-      user: { id: user._id, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol }
+      usuario: { id: user._id, nombre: user.nombre, apellido: user.apellido, email: user.email, rol: user.rol }
     });
   } catch (err) {
     res.status(500).json({ message: err.message });
