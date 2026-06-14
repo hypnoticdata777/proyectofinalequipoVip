@@ -47,12 +47,12 @@ export const routes: Routes = [
     data: { roles: ['alumno'] },
     loadComponent: () => import('./modules/inscripcion/inscripcion.component').then(m => m.InscripcionComponent),
   },
-  {
-    path: 'calificaciones',
-    canActivate: [authGuard, roleGuard],
-    data: { roles: ['profesor', 'admin'] },
-    loadComponent: () => import('./modules/calificaciones/calificaciones.component').then(m => m.CalificacionesComponent),
-  },
+ {
+  path: 'calificaciones/alumno',
+  canActivate: [authGuard, roleGuard],
+  data: { roles: ['alumno'] },
+  loadComponent: () => import('./modules/calificaciones/calificaciones-alumno/calificaciones-alumno.component').then(m => m.CalificacionesAlumnoComponent),
+},
   {
     path: 'historial',
     canActivate: [authGuard],

@@ -38,4 +38,26 @@ const registrar = async (req, res) => {
   }
 };
 
-module.exports = { verPorMateria, registrar };
+const misCalificaciones = async (req, res) => {
+  try {
+    const calificaciones = await Calificacion.find({ alumno_id: req.user.id })
+      .populate('materia_id', 'nombre clave');
+    
+    const resultado = calificaciones.map(cal => ({
+      _id: cal._id,
+      materia: cal.materia_id,
+      parcial1: cal.parcial1,
+      parcial2: cal.parcial2,
+      parcial3: cal.parcial3,
+      calificacionFinal: cal.final,
+      cerrada: cal.cerrada,
+      periodo: cal.periodo
+    }));
+
+    res.json(resultado);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { verPorMateria, registrar, misCalificaciones };
