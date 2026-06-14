@@ -46,11 +46,11 @@ mongodb+srv://usf_admin:<password>@cluster0.xxxxx.mongodb.net/usf_portal?retryWr
 
 ```
 PORT=3000
-MONGODB_URI=mongodb+srv://usf_admin:PASSWORD@cluster0.xxxxx.mongodb.net/usf_portal
-JWT_SECRET=clave_super_secreta_64_caracteres_minimo_generar_con_openssl
+MONGODB_URI=<pegar-aqui-tu-uri-de-mongodb-atlas>
+JWT_SECRET=<generar-con-openssl-rand-base64-64>
 JWT_EXPIRES_IN=7d
-GOOGLE_CLIENT_ID=tu_client_id_produccion.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=tu_client_secret_produccion
+GOOGLE_CLIENT_ID=<tu-google-client-id>.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=<tu-google-client-secret>
 GOOGLE_CALLBACK_URL=https://tu-app.up.railway.app/api/auth/google/callback
 FRONTEND_URL=https://usf-portal.vercel.app
 NODE_ENV=production
