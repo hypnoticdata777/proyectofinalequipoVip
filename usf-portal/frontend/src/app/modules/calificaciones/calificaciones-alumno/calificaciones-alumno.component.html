@@ -1,0 +1,62 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Portal — Mis Calificaciones</span>
+      <a routerLink="/dashboard/alumno" class="btn-back">← Volver</a>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <h1 class="page-title">Mis Calificaciones</h1>
+
+    <div *ngIf="cargando" class="loader-inline">
+      <div class="spinner-sm"></div> Cargando calificaciones...
+    </div>
+
+    <div *ngIf="error" class="sin-datos">
+      <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!cargando && !error && calificaciones.length > 0" class="tabla-container">
+      <table class="tabla-calificaciones">
+        <thead>
+          <tr>
+            <th>Materia</th>
+            <th>Clave</th>
+            <th>Parcial 1</th>
+            <th>Parcial 2</th>
+            <th>Parcial 3</th>
+            <th>Final</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let cal of calificaciones">
+            <td>{{ cal.materia?.nombre || 'N/A' }}</td>
+            <td>{{ cal.materia?.clave || 'N/A' }}</td>
+            <td>{{ cal.parcial1 ?? '-' }}</td>
+            <td>{{ cal.parcial2 ?? '-' }}</td>
+            <td>{{ cal.parcial3 ?? '-' }}</td>
+            <td>
+              <span *ngIf="cal.calificacionFinal !== null && cal.calificacionFinal !== undefined"
+                [class]="cal.calificacionFinal >= 60 ? 'badge-aprobado' : 'badge-reprobado'">
+                {{ cal.calificacionFinal?.toFixed(1) }}
+              </span>
+              <span *ngIf="cal.calificacionFinal === null || cal.calificacionFinal === undefined">-</span>
+            </td>
+            <td>
+              <span class="badge-cerrado" *ngIf="cal.cerrada">Acta Cerrada</span>
+              <span class="badge-abierta" *ngIf="!cal.cerrada">En curso</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div *ngIf="!cargando && !error && calificaciones.length === 0" class="sin-datos">
+      <p>No tienes calificaciones registradas aún.</p>
+    </div>
+
+  </main>
+</div>
