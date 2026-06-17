@@ -79,4 +79,15 @@ const ejecutarInscripcion = async (alumnoId, materiaIds, periodo) => {
   return inscripcion;
 };
 
-module.exports = { ejecutarInscripcion };
+// validarInscripcion: solo ejecuta las 4 validaciones y lanza error si alguna falla.
+// El controlador se encarga de crear la inscripción después de que pasen todas.
+const validarInscripcion = async (alumnoId, materiaIds, periodo) => {
+  for (const materiaId of materiaIds) {
+    await verificarSinAdeudos(alumnoId);
+    const materia = await verificarCupo(materiaId);
+    await verificarSeriacion(alumnoId, materia);
+    await verificarHorario(alumnoId, periodo, materiaId);
+  }
+};
+
+module.exports = { ejecutarInscripcion, validarInscripcion };
