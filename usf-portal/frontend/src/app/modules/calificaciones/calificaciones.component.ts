@@ -60,7 +60,7 @@ export class CalificacionesComponent implements OnInit {
     this.guardando[cal._id] = true;
     this.mensajes[cal._id] = '';
 
-    const payload = { parcial1: cal.parcial1, parcial2: cal.parcial2, parcial3: cal.parcial3, calificacionFinal: cal.calificacionFinal };
+    const payload = { parcial1: cal.parcial1, parcial2: cal.parcial2, parcial3: cal.parcial3, final: cal.final };
 
     this.apiService.put<any>(`calificaciones/${cal._id}`, payload).subscribe({
       next: (calActualizada) => {
