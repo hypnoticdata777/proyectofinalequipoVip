@@ -1,3 +1,7 @@
+// Componente de registro de calificaciones (RF-20, RF-21) — vista del profesor y admin.
+// El profesor carga su grupo por materia, edita los parciales y guarda.
+// Al guardar, el backend recalcula el promedio y emite una notificación SSE al alumno.
+// El admin además puede cerrar el acta (RF-21), bloqueando ediciones futuras.
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
@@ -23,11 +27,12 @@ export class CalificacionesComponent implements OnInit {
   calificaciones: any[] = [];
   cargandoMaterias = true;
   cargandoCalificaciones = false;
-  guardando: Record<string, boolean> = {};
-  mensajes: Record<string, string> = {};
+  guardando: Record<string, boolean> = {};  // Estado de carga por calificación individual
+  mensajes: Record<string, string> = {};    // Feedback visual por fila
 
   ngOnInit(): void {
     this.cargarMaterias();
+    // Permite abrir directamente en una materia via ?materiaId=...
     const materiaId = this.route.snapshot.queryParamMap.get('materiaId');
     if (materiaId) {
       this.materiaSeleccionada = materiaId;
@@ -42,6 +47,7 @@ export class CalificacionesComponent implements OnInit {
     });
   }
 
+  // El endpoint /mi-grupo/:id devuelve solo los alumnos asignados al profesor autenticado
   cargarCalificaciones(materiaId: string): void {
     this.cargandoCalificaciones = true;
     this.apiService.get<any[]>(`calificaciones/mi-grupo/${materiaId}`).subscribe({
@@ -51,15 +57,14 @@ export class CalificacionesComponent implements OnInit {
   }
 
   onMateriaChange(): void {
-    if (this.materiaSeleccionada) {
-      this.cargarCalificaciones(this.materiaSeleccionada);
-    }
+    if (this.materiaSeleccionada) this.cargarCalificaciones(this.materiaSeleccionada);
   }
 
   guardarCalificacion(cal: any): void {
     this.guardando[cal._id] = true;
     this.mensajes[cal._id] = '';
 
+    // El backend recalcula 'final' automáticamente a partir de los parciales
     const payload = { parcial1: cal.parcial1, parcial2: cal.parcial2, parcial3: cal.parcial3, final: cal.final };
 
     this.apiService.put<any>(`calificaciones/${cal._id}`, payload).subscribe({

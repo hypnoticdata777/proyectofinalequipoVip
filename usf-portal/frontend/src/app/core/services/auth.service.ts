@@ -1,3 +1,6 @@
+// Servicio de autenticación (RF-01, RF-02, RF-05).
+// Gestiona login, registro, logout y decodificación del JWT almacenado en localStorage.
+// Todos los componentes que necesitan saber el rol o identidad del usuario lo inyectan.
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -25,7 +28,7 @@ export class AuthService {
   private readonly router = inject(Router);
   private readonly TOKEN_KEY = 'usf_token';
 
-  // RF-01: Login con email/password + JWT
+  // RF-01: Login con email/password — guarda el JWT y redirige según rol
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password }).pipe(
       tap((res) => {
@@ -35,7 +38,7 @@ export class AuthService {
     );
   }
 
-  // RF-02: Registro de usuarios con roles
+  // RF-02: Registro de usuarios — igual que login, guarda token y redirige
   register(datos: { nombre: string; apellido: string; email: string; password: string; rol?: string; matricula?: string }): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, datos).pipe(
       tap((res) => {
@@ -45,6 +48,7 @@ export class AuthService {
     );
   }
 
+  // Cada rol tiene su propio dashboard; si el rol es desconocido va al login
   private redirigirSegunRol(rol: string): void {
     const rutas: Record<string, string> = {
       alumno: '/dashboard/alumno',
@@ -59,10 +63,12 @@ export class AuthService {
     this.router.navigate(['/auth/login']);
   }
 
+  // GET /api/auth/me — obtiene el perfil completo del servidor (útil para datos actualizados)
   getCurrentUser(): Observable<User> {
     return this.http.get<User>(`${environment.apiUrl}/auth/me`);
   }
 
+  // Verifica localmente si el token existe y no está expirado (sin llamar al servidor)
   isAuthenticated(): boolean {
     const token = localStorage.getItem(this.TOKEN_KEY);
     if (!token) return false;
@@ -74,6 +80,7 @@ export class AuthService {
     }
   }
 
+  // Extrae el rol del payload del JWT sin llamar al servidor
   getUserRole(): string {
     const token = localStorage.getItem(this.TOKEN_KEY);
     if (!token) return '';
@@ -88,6 +95,7 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
+  // Decodifica la parte payload del JWT (base64url) — no verifica la firma
   private decodeToken(token: string): any {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');

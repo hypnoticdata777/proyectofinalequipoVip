@@ -1,3 +1,6 @@
+// Componente de inscripción de materias (RF-14, RF-15).
+// El alumno selecciona materias disponibles en el periodo actual y confirma.
+// El backend valida automáticamente: cupo, seriación, horario y adeudos.
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -40,6 +43,7 @@ export class InscripcionComponent implements OnInit {
     return this.materiasSeleccionadas.some(m => m._id === materiaId);
   }
 
+  // Toggle de selección — agrega o quita la materia de la lista pendiente
   toggleMateria(materia: any): void {
     if (this.estaSeleccionada(materia._id)) {
       this.materiasSeleccionadas = this.materiasSeleccionadas.filter(m => m._id !== materia._id);
@@ -69,13 +73,14 @@ export class InscripcionComponent implements OnInit {
       },
       error: (err) => {
         this.enviando = false;
-        const msg = err.error?.error || 'Error al procesar la inscripción.';
-        this.error = msg;
+        // El backend devuelve el tipo de error en 'codigo' para mostrar el ícono correcto
+        this.error = err.error?.error || 'Error al procesar la inscripción.';
         this.tipoError = err.error?.codigo || 'ERROR';
       }
     });
   }
 
+  // Mapea el código de error del backend a un ícono visual para el alumno
   getIconoError(): string {
     const iconos: Record<string, string> = {
       ADEUDO_PENDIENTE: '💳',
