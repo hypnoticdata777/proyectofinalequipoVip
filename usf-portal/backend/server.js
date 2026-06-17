@@ -12,15 +12,31 @@ const httpServer = http.createServer(app);
 
 // Socket.io se mantiene disponible para usos futuros internos;
 // las notificaciones al navegador usan SSE (ver notificaciones.controller.js).
+const allowedOrigins = [
+  'http://localhost:4200',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+
 const io = new Server(httpServer, {
-  cors: { origin: 'http://localhost:4200', methods: ['GET', 'POST'] }
+  cors: { origin: allowedOrigins, methods: ['GET', 'POST'] }
 });
 
 // Conexión a MongoDB Atlas
 connectDB();
 
 // Middlewares globales
-app.use(cors({ origin: 'http://localhost:4200' }));
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Hace io accesible desde cualquier controlador via req.app.get('io')
