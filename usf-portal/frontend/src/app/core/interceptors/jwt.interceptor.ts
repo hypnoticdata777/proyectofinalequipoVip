@@ -1,3 +1,6 @@
+// Interceptor HTTP — agrega el token JWT a cada petición saliente.
+// También maneja respuestas 401: hace logout automático y redirige al login
+// para que las sesiones expiradas no queden en un estado inconsistente.
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -9,6 +12,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const token = authService.getToken();
 
+  // Clona la request para agregar el header sin mutar el objeto original
   const cloned = token
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
     : req;

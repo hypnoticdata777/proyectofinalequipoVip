@@ -1,3 +1,6 @@
+// Componente de gestión de inscripciones para el admin.
+// Lista todas las inscripciones del sistema y permite cancelarlas.
+// Usa DELETE /api/inscripciones/:id (alias de PUT /:id/cancelar en el backend).
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -25,14 +28,8 @@ export class InscripcionesAdminComponent implements OnInit {
 
   cargarInscripciones(): void {
     this.apiService.get<any[]>('inscripciones').subscribe({
-      next: (data) => {
-        this.inscripciones = data;
-        this.cargando = false;
-      },
-      error: () => {
-        this.error = 'No se pudieron cargar las inscripciones.';
-        this.cargando = false;
-      }
+      next: (data) => { this.inscripciones = data; this.cargando = false; },
+      error: () => { this.error = 'No se pudieron cargar las inscripciones.'; this.cargando = false; }
     });
   }
 
@@ -40,6 +37,7 @@ export class InscripcionesAdminComponent implements OnInit {
     if (!confirm('¿Cancelar esta inscripción?')) return;
     this.apiService.delete<any>(`inscripciones/${id}`).subscribe({
       next: () => {
+        // Elimina de la lista local para reflejar el cambio sin recargar
         this.inscripciones = this.inscripciones.filter(i => i._id !== id);
       },
       error: () => alert('Error al cancelar la inscripción.')

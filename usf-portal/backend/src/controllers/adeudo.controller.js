@@ -1,16 +1,15 @@
 const Adeudo = require('../models/Adeudo');
-const User = require('../models/User');
 
 const listarAdeudos = async (req, res) => {
   try {
     const { alumnoId, estado, periodo } = req.query;
     const filtro = {};
-    if (alumnoId) filtro.alumno = alumnoId;
+    if (alumnoId) filtro.alumno_id = alumnoId;
     if (estado) filtro.estado = estado;
     if (periodo) filtro.periodo = periodo;
 
     const adeudos = await Adeudo.find(filtro)
-      .populate('alumno', 'nombre apellido matricula email')
+      .populate('alumno_id', 'nombre apellido matricula email')
       .populate('registradoPor', 'nombre apellido')
       .sort({ fechaRegistro: -1 });
     res.json(adeudos);
@@ -23,7 +22,7 @@ const crearAdeudo = async (req, res) => {
   try {
     const adeudo = await Adeudo.create({ ...req.body, registradoPor: req.user.id });
     const adeudoPopulado = await Adeudo.findById(adeudo._id)
-      .populate('alumno', 'nombre apellido matricula')
+      .populate('alumno_id', 'nombre apellido matricula')
       .populate('registradoPor', 'nombre apellido');
     res.status(201).json(adeudoPopulado);
   } catch (error) {
@@ -49,7 +48,7 @@ const marcarPagado = async (req, res) => {
 
 const getMisAdeudos = async (req, res) => {
   try {
-    const adeudos = await Adeudo.find({ alumno: req.user.id }).sort({ fechaRegistro: -1 });
+    const adeudos = await Adeudo.find({ alumno_id: req.user.id }).sort({ fechaRegistro: -1 });
     res.json(adeudos);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener tus adeudos.' });

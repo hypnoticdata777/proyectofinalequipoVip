@@ -1,3 +1,5 @@
+// Modelo de notificación — se persiste en BD y además se emite por SSE en tiempo real.
+// 'leida' permite mostrar el badge de "sin leer" en el frontend.
 const mongoose = require('mongoose');
 
 const notificacionSchema = new mongoose.Schema({

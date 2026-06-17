@@ -63,13 +63,13 @@
               <td>{{ cal.parcial1 || '-' }}</td>
               <td>{{ cal.parcial2 || '-' }}</td>
               <td>{{ cal.parcial3 || '-' }}</td>
-              <td>{{ cal.calificacionFinal?.toFixed(1) || '-' }}</td>
+              <td>{{ cal.final?.toFixed(1) || '-' }}</td>
               <td>
-                <span *ngIf="cal.calificacionFinal !== null"
-                      [class]="cal.calificacionFinal >= 60 ? 'badge-aprobado' : 'badge-reprobado'">
-                  {{ cal.calificacionFinal >= 60 ? 'Aprobado' : 'Reprobado' }}
+                <span *ngIf="cal.final !== null && cal.final !== undefined"
+                      [class]="cal.final >= 60 ? 'badge-aprobado' : 'badge-reprobado'">
+                  {{ cal.final >= 60 ? 'Aprobado' : 'Reprobado' }}
                 </span>
-                <span *ngIf="cal.calificacionFinal === null" class="badge-pendiente">En curso</span>
+                <span *ngIf="cal.final === null || cal.final === undefined" class="badge-pendiente">En curso</span>
               </td>
             </tr>
           </tbody>

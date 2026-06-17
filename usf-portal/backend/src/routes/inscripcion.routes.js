@@ -8,5 +8,7 @@ router.post('/', verifyToken, checkRole(['alumno']), crearInscripcion);
 router.get('/mi-inscripcion', verifyToken, checkRole(['alumno']), getMiInscripcion);
 router.get('/', verifyToken, checkRole(['admin']), listarInscripciones);
 router.put('/:id/cancelar', verifyToken, checkRole(['admin']), cancelarInscripcion);
+// DELETE /inscripciones/:id — alias para el frontend que usa apiService.delete()
+router.delete('/:id', verifyToken, checkRole(['admin']), cancelarInscripcion);
 
 module.exports = router;

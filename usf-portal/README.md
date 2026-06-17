@@ -1,18 +1,18 @@
 # USF Portal — Sistema Escolar Integral
 
-> Portal web para la gestión académica, inscripciones, calificaciones, pagos y notificaciones de la Universidad.
+> Portal web full-stack para la gestión académica: inscripciones, calificaciones, pagos y notificaciones en tiempo real.
 
 ---
 
 ## Equipo VIP
 
-| Integrante | Rol | Módulo |
+| Integrante | Rol | Módulo principal |
 |---|---|---|
-| Carlos Sanchez | Líder Técnico | Módulo 1 — Backend (Auth, JWT, roles) |
-| Luis Roberto Suarez | Frontend Lead | Módulo 1 — Frontend (Angular: login, dashboards, guards) |
-| Ricardo Galindo | Backend Developer | Módulo 2 — Backend (inscripción, calificaciones, historial) |
-| Eduardo Robles | Frontend Developer | Módulo 2 — Frontend (formularios de inscripción, actas, kardex) |
-| Mariana Jimenez | Full-stack Developer | Módulo 3 — Completo (Stripe, PDF, Socket.io) |
+| Carlos Sanchez | Líder Técnico | Backend Auth + JWT + Roles |
+| Luis Roberto Suarez | Frontend Lead | Angular: login, dashboards, guards |
+| Ricardo Galindo | Backend Developer | Inscripciones, calificaciones, historial |
+| Eduardo Robles | Frontend Developer | Formularios de inscripción, actas, kardex |
+| Mariana Jimenez | Full-stack Developer | Pagos, notificaciones SSE, SSE Manager |
 
 ---
 
@@ -22,14 +22,11 @@
 |---|---|
 | Frontend | Angular 17+ (standalone components, lazy loading) |
 | Backend | Node.js + Express.js |
-| Base de datos | MongoDB (Mongoose como ODM) |
-| Autenticación | Email + Password + JWT (bcrypt) |
-| Tiempo real | Socket.io (notificaciones push — RF-22) |
-| Pagos | Stripe (RF-30) |
-| PDF | PDFKit (referencias bancarias — RF-31) |
-| Testing | Jest (backend) + Karma/Jasmine (frontend) + Cypress (E2E) |
-| CI/CD | GitHub Actions |
-| Carga | Artillery.io (stress test — RF-54) |
+| Base de datos | MongoDB Atlas (Mongoose como ODM) |
+| Autenticación | Email + contraseña + JWT (bcrypt) |
+| Tiempo real | **Server-Sent Events (SSE)** — nativo del navegador, sin librerías |
+| Pagos | Sistema local (efectivo / transferencia / OXXO) — sin Stripe |
+| Testing de carga | Artillery.io |
 
 ---
 
@@ -39,45 +36,39 @@
 ┌─────────────────────────────────────────────────────────┐
 │                    CLIENTE (Angular 17+)                 │
 │  ┌──────────┐ ┌──────────┐ ┌────────────┐ ┌──────────┐ │
-│  │   Auth   │ │Inscripción│ │Calificación│ │  Pagos   │ │
-│  │ Módulo 1 │ │ Módulo 2  │ │  Módulo 2  │ │ Módulo 3 │ │
+│  │   Auth   │ │Inscripción│ │Calificación│ │  Pagos / │ │
+│  │ Dashboard│ │  RF-14/15 │ │  RF-20/21  │ │ Notifs   │ │
 │  └────┬─────┘ └─────┬────┘ └─────┬──────┘ └────┬─────┘ │
 │       └─────────────┴────────────┴──────────────┘       │
-│                      API REST (HTTP + JWT)               │
-└─────────────────────────────┬───────────────────────────┘
-                              │
-              ┌───────────────▼───────────────┐
-              │      BACKEND (Express.js)      │
-              │                               │
-              │  ┌─────────┐  ┌────────────┐  │
-              │  │  Rutas  │  │ Middleware  │  │
-              │  │ /api/*  │  │ JWT + Roles │  │
-              │  └────┬────┘  └────────────┘  │
-              │       │                       │
-              │  ┌────▼────┐  ┌────────────┐  │
-              │  │Controler│  │  Servicios │  │
-              │  └────┬────┘  └────────────┘  │
-              │       │                       │
-              │  ┌────▼────┐  ┌────────────┐  │
-              │  │ Modelos │  │ Socket.io  │  │
-              │  │Mongoose │  │(tiempo real│  │
-              │  └────┬────┘  └────────────┘  │
-              └───────┼───────────────────────┘
-                      │
-        ┌─────────────▼────────────┐
-        │   MongoDB (Atlas/Local)  │
-        │  users · materias        │
-        │  inscripciones · pagos   │
-        │  calificaciones          │
-        │  notificaciones          │
-        └──────────────────────────┘
-                      │
-        ┌─────────────▼────────────┐
-        │    Servicios Externos    │
-        │  Google OAuth 2.0        │
-        │  Stripe API              │
-        │  PDFKit (referencias)    │
-        └──────────────────────────┘
+│           API REST (HTTP + JWT)   SSE stream             │
+└──────────────────────┬──────────────────────────────────┘
+                       │
+       ┌───────────────▼───────────────┐
+       │      BACKEND (Express.js)      │
+       │                               │
+       │  ┌──────────┐ ┌────────────┐  │
+       │  │  Routes  │ │ Middleware │  │
+       │  │  /api/*  │ │ JWT+Roles  │  │
+       │  └────┬─────┘ └────────────┘  │
+       │       │                       │
+       │  ┌────▼──────────────────┐    │
+       │  │    Controllers        │    │
+       │  │  + inscripcion.service│    │
+       │  └────┬──────────────────┘    │
+       │       │             │         │
+       │  ┌────▼────┐  ┌─────▼──────┐  │
+       │  │Mongoose │  │ SSE Manager│  │
+       │  │ Models  │  │(tiempo real│  │
+       │  └────┬────┘  └────────────┘  │
+       └───────┼───────────────────────┘
+               │
+   ┌───────────▼────────────┐
+   │   MongoDB Atlas        │
+   │  users · materias      │
+   │  inscripciones · pagos │
+   │  calificaciones        │
+   │  adeudos · notificaciones│
+   └────────────────────────┘
 ```
 
 ---
@@ -86,300 +77,282 @@
 
 ```
 usf-portal/
-├── frontend/
-│   └── src/
-│       ├── app/
-│       │   ├── core/
-│       │   │   ├── guards/           # AuthGuard, RoleGuard (RF-05)
-│       │   │   ├── interceptors/     # JWT interceptor
-│       │   │   └── services/         # AuthService, UserService
-│       │   ├── shared/
-│       │   │   └── components/       # Navbar, Loader, Modal, etc.
-│       │   └── modules/
-│       │       ├── auth/             # MÓDULO 1 — Login OAuth (RF-01)
-│       │       ├── dashboard/        # MÓDULO 1 — Dashboard por rol
-│       │       │   ├── alumno/
-│       │       │   ├── profesor/
-│       │       │   └── admin/
-│       │       ├── inscripcion/      # MÓDULO 2 — Inscripción (RF-14, RF-15)
-│       │       ├── calificaciones/   # MÓDULO 2 — Calificaciones (RF-20)
-│       │       ├── historial/        # MÓDULO 2 — Kardex (RF-38)
-│       │       ├── pagos/            # MÓDULO 3 — Stripe + PDF (RF-30, RF-31)
-│       │       └── notificaciones/   # MÓDULO 3 — Socket.io (RF-22)
-│       ├── environments/
-│       └── assets/
-│
 ├── backend/
+│   ├── server.js                  # Entry point: Express + SSE + rutas
+│   ├── .env.example               # Variables de entorno requeridas
+│   ├── .env                       # Local (NO se commitea — ver .gitignore)
+│   ├── artillery.yml              # Pruebas de carga (RF-54)
 │   └── src/
-│       ├── config/                   # DB, Passport, Stripe config
-│       ├── controllers/              # Lógica HTTP por recurso
-│       ├── middleware/               # verifyToken.js, checkRole.js
-│       ├── models/                   # Schemas de Mongoose
-│       ├── routes/                   # Rutas Express /api/*
-│       └── services/                 # Lógica de negocio
+│       ├── config/
+│       │   └── db.js              # Conexión a MongoDB Atlas
+│       ├── controllers/           # Lógica de cada endpoint
+│       │   ├── auth.controller.js
+│       │   ├── materias.controller.js
+│       │   ├── inscripcion.controller.js
+│       │   ├── calificacion.controller.js    # RF-20/21/22 (con SSE)
+│       │   ├── calificaciones.controller.js  # Rutas base (mis-calificaciones)
+│       │   ├── historial.controller.js       # RF-38 (kardex)
+│       │   ├── pagos.controller.js
+│       │   ├── adeudo.controller.js
+│       │   └── notificaciones.controller.js  # SSE stream endpoint
+│       ├── middleware/
+│       │   ├── verifyToken.js     # Valida JWT en header Authorization
+│       │   └── checkRole.js       # Autorización por rol (acepta string o array)
+│       ├── models/                # Schemas de Mongoose
+│       │   ├── User.js
+│       │   ├── Materia.js
+│       │   ├── Inscripcion.js
+│       │   ├── Calificacion.js
+│       │   ├── Pago.js
+│       │   ├── Adeudo.js
+│       │   └── Notificacion.js
+│       ├── routes/                # Express routers
+│       │   ├── auth.routes.js
+│       │   ├── materias.routes.js
+│       │   ├── inscripcion.routes.js
+│       │   ├── calificaciones.routes.js
+│       │   ├── historial.routes.js
+│       │   ├── pagos.routes.js
+│       │   ├── adeudo.routes.js
+│       │   └── notificaciones.routes.js
+│       ├── services/
+│       │   └── inscripcion.service.js  # 4 validaciones: cupo, seriación, horario, adeudos
+│       └── utils/
+│           └── sse-manager.js          # Gestor de conexiones SSE activas
 │
-├── docs/
-│   ├── 01_analisis/                  # MTR, User Stories, Glosario
-│   ├── 02_diseno/                    # Arquitectura, Schemas, API Swagger
-│   ├── 03_implementacion/            # Guías por módulo
-│   ├── 04_pruebas/                   # Casos de prueba, reportes
-│   └── 05_despliegue/                # CI/CD, Vercel, Railway, Atlas
-│
-├── .gitignore
-└── README.md                         # Este archivo
+└── frontend/
+    └── src/
+        └── app/
+            ├── core/
+            │   ├── guards/
+            │   │   ├── auth.guard.ts    # Requiere sesión activa
+            │   │   └── role.guard.ts   # Requiere rol específico
+            │   ├── interceptors/
+            │   │   └── jwt.interceptor.ts  # Agrega Bearer token + maneja 401
+            │   └── services/
+            │       ├── auth.service.ts          # Login, register, JWT decode
+            │       ├── api.service.ts           # Wrapper HTTP genérico
+            │       └── notificaciones.service.ts # SSE + BehaviorSubjects
+            └── modules/
+                ├── auth/
+                │   └── login/              # Login y registro
+                ├── dashboard/
+                │   ├── alumno/             # Dashboard del alumno
+                │   ├── profesor/           # Dashboard del profesor
+                │   └── admin/              # Dashboard del admin
+                ├── inscripcion/            # RF-14: inscribir materias (alumno)
+                ├── inscripciones-admin/    # Vista admin de todas las inscripciones
+                ├── calificaciones/
+                │   ├── calificaciones.component  # RF-20/21: captura (profesor/admin)
+                │   └── calificaciones-alumno/    # Vista de notas del alumno
+                ├── historial/              # RF-38: kardex académico
+                ├── notificaciones/         # RF-22: bandeja de notificaciones
+                └── pagos/                  # RF-30: gestión de pagos
 ```
 
 ---
 
-## Módulos del Sistema
+## API REST — Endpoints
 
-### Módulo 1 — Autenticación y Control de Acceso
-**RFs cubiertos:** RF-01, RF-05  
-**CPs cubiertos:** CP-01, CP-02, CP-03
+### Autenticación
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| POST | `/api/auth/register` | Público | Registrar usuario con rol |
+| POST | `/api/auth/login` | Público | Login → devuelve JWT |
+| GET | `/api/auth/me` | JWT | Perfil del usuario autenticado |
 
-Gestiona el flujo completo de registro/login con email y contraseña, generación de JWT y control de acceso por rol (alumno / profesor / admin). Las contraseñas se almacenan con hash bcrypt. **No se usa Google OAuth** para simplificar el entorno de desarrollo y evitar dependencias de credenciales externas.
+### Materias
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| GET | `/api/materias` | JWT | Listar materias activas (acepta ?periodo=) |
+| POST | `/api/materias` | Admin | Crear materia |
+| PUT | `/api/materias/:id` | Admin | Actualizar materia |
+| DELETE | `/api/materias/:id` | Admin | Desactivar materia (baja lógica) |
 
-**Flujo de autenticación:**
-```
-1. Usuario envía POST /api/auth/register con { nombre, email, password, rol }
-2. Backend hashea la contraseña con bcrypt (salt 10)
-3. Guarda el usuario en MongoDB
-4. Devuelve JWT firmado con { id, rol, nombre }
-   — o —
-1. Usuario envía POST /api/auth/login con { email, password }
-2. Backend verifica el hash bcrypt
-3. Si es válido, firma y devuelve JWT
-4. Angular guarda el token en localStorage
-5. Cada request incluye el JWT en el header: Authorization: Bearer <token>
-6. verifyToken.js valida el JWT → req.user disponible
-7. checkRole.js verifica que el rol tenga permiso para esa ruta
-```
+### Inscripciones
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| POST | `/api/inscripciones` | Alumno | Inscribir materias (valida 4 reglas) |
+| GET | `/api/inscripciones/mi-inscripcion` | Alumno | Mi inscripción activa |
+| GET | `/api/inscripciones` | Admin | Listar todas las inscripciones |
+| PUT | `/api/inscripciones/:id/cancelar` | Admin | Cancelar inscripción |
+| DELETE | `/api/inscripciones/:id` | Admin | Alias de cancelar (para frontend) |
 
-**Endpoints:**
-```
-POST  /api/auth/register   → Registrar nuevo usuario
-POST  /api/auth/login      → Iniciar sesión (devuelve JWT)
-GET   /api/auth/me         → Perfil del usuario autenticado (requiere JWT)
-POST  /api/auth/logout     → Cerrar sesión (client-side: eliminar token)
-```
+### Calificaciones
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| GET | `/api/calificaciones/mis-calificaciones` | Alumno | Mis calificaciones |
+| GET | `/api/calificaciones/mi-grupo/:materiaId` | Profesor | Alumnos del grupo |
+| GET | `/api/calificaciones/alumno/:alumnoId` | JWT | Calificaciones de un alumno |
+| PUT | `/api/calificaciones/:id` | Profesor/Admin | Registrar notas + notificación SSE |
+| PUT | `/api/calificaciones/:id/cerrar` | Admin | Cerrar acta (irreversible) |
+| GET | `/api/calificaciones/:materiaId` | JWT | Ver por materia |
 
----
+### Historial
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| GET | `/api/historial/:alumnoId` | JWT | Kardex completo con resumen estadístico |
 
-### Módulo 2 — Núcleo Académico
-**RFs cubiertos:** RF-14, RF-15, RF-20, RF-38  
-**CPs cubiertos:** CP-04, CP-05, CP-06, CP-07, CP-11
+### Pagos
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| GET | `/api/pagos/mis-pagos` | Alumno | Mis pagos |
+| GET | `/api/pagos/:alumnoId` | Admin | Pagos de un alumno |
+| POST | `/api/pagos` | Admin | Registrar pago (genera referencia automática) |
+| PUT | `/api/pagos/:id/pagar` | Admin | Confirmar pago |
 
-#### Sub-feature A: Inscripción de Materias (RF-14, RF-15)
-Antes de confirmar cualquier inscripción, el backend ejecuta 4 validaciones en secuencia:
-1. Verificar que no tenga adeudos financieros pendientes (CP-05)
-2. Verificar cupo disponible en la materia (RF-15)
-3. Verificar seriación completa (prerequisitos aprobados) (RF-15)
-4. Verificar que no haya choques de horario (CP-06)
+### Adeudos
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| GET | `/api/adeudos` | Admin | Listar adeudos (acepta ?estado=pendiente) |
+| POST | `/api/adeudos` | Admin | Crear adeudo |
+| PUT | `/api/adeudos/:id/pagado` | Admin | Marcar adeudo como pagado |
+| GET | `/api/adeudos/mis-adeudos` | Alumno | Mis adeudos |
 
-**Endpoints:**
-```
-GET   /api/materias              → Listado de materias disponibles
-POST  /api/inscripciones         → Inscribir materias (con 4 validaciones)
-GET   /api/inscripciones/:id     → Consultar inscripción
-DELETE /api/inscripciones/:id    → Cancelar inscripción
-```
-
-#### Sub-feature B: Calificaciones (RF-20)
-Las actas quedan bloqueadas una vez que el administrador cierra el periodo.
-
-**Endpoints:**
-```
-GET   /api/calificaciones/:materiaId  → Ver calificaciones de un grupo
-PUT   /api/calificaciones/:id         → Registrar notas (solo profesor, acta abierta)
-```
-
-#### Sub-feature C: Historial Académico / Kardex (RF-38)
-```
-GET   /api/historial/:alumnoId        → Kardex completo con promedios por periodo
-```
+### Notificaciones
+| Método | Ruta | Acceso | Descripción |
+|---|---|---|---|
+| GET | `/api/notificaciones/stream` | Token en query | **SSE stream** en tiempo real |
+| GET | `/api/notificaciones` | JWT | Listar notificaciones |
+| PUT | `/api/notificaciones/:id/leer` | JWT | Marcar como leída |
 
 ---
 
-### Módulo 3 — Finanzas, Notificaciones y Performance
-**RFs cubiertos:** RF-22, RF-30, RF-31, RF-54  
-**CPs cubiertos:** CP-08, CP-09, CP-10, CP-12
+## Notificaciones en Tiempo Real (SSE)
 
-#### Sub-feature A: Pagos con Stripe (RF-30)
-```
-POST  /api/pagos/stripe          → Crear PaymentIntent en MXN
-POST  /api/pagos/webhook         → Webhook de confirmación de Stripe
-```
+Se usa **Server-Sent Events** nativo — sin Socket.io ni librerías en el frontend:
 
-#### Sub-feature B: Referencias Bancarias PDF (RF-31)
-Genera referencias SPEI/OXXO descargables usando PDFKit.
 ```
-POST  /api/pagos/referencia      → Generar referencia + PDF (CP-10)
+Alumno abre app → EventSource('/api/notificaciones/stream?token=...')
+Profesor guarda calificación → calificacion.controller → emitirAUsuario()
+                                                          → res.write(event)
+                                                          → EventSource recibe el evento
 ```
 
-#### Sub-feature C: Notificaciones en Tiempo Real (RF-22)
-Socket.io emite eventos al alumno cuando sus calificaciones son publicadas. Latencia objetivo: **< 2 segundos** (CP-08).
-
-#### Sub-feature D: Prueba de Carga (RF-54)
-Artillery simula 5000 usuarios concurrentes contra el endpoint de inscripciones (CP-12).
+El token se pasa como query param porque `EventSource` no soporta headers personalizados.
 
 ---
 
-## Schemas de Base de Datos (MongoDB)
+## Validaciones de Inscripción (RF-15)
 
-```javascript
-// USERS
-{ _id, googleId, nombre, apellido, email,
-  rol: "alumno" | "profesor" | "admin",
-  foto, matricula, activo, fechaCreacion }
+El servicio `inscripcion.service.js` ejecuta 4 validaciones antes de confirmar:
 
-// MATERIAS
-{ _id, clave, nombre, creditos,
-  cupoMaximo, cupoDisponible,
-  horario: [{ dia, horaInicio, horaFin, salon }],
-  seriacion: [materia_id],
-  profesor_id, periodo, activa }
+1. **CP-05** — Sin adeudos o pagos pendientes
+2. **CP-04** — La materia tiene cupo disponible (`cupoDisponible > 0`)
+3. **CP-03** — Seriación completa (todas las prerequisitos aprobadas con ≥ 60)
+4. **CP-06** — Sin choque de horario con otras materias ya inscritas
 
-// INSCRIPCIONES
-{ _id, alumno_id, periodo,
-  materias: [materia_id],
-  estado: "pendiente" | "confirmada" | "cancelada",
-  fechaInscripcion }
-
-// CALIFICACIONES
-{ _id, alumno_id, materia_id, profesor_id,
-  periodo, parcial1, parcial2, parcial3, final,
-  cerrada: Boolean, fechaCierre }
-
-// PAGOS
-{ _id, alumno_id, concepto, monto,
-  tipo: "colegiaturas" | "tramite",
-  estado: "pendiente" | "pagado" | "fallido",
-  metodo: "stripe" | "spei" | "oxxo",
-  referencia, stripePaymentId, fecha }
-
-// NOTIFICACIONES
-{ _id, destinatario_id, titulo, mensaje,
-  tipo: "calificacion" | "horario" | "pago",
-  leida: Boolean, fecha }
-```
+Si alguna falla, devuelve HTTP 400 con un código legible (`SIN_CUPO`, `CRUCE_HORARIO`, etc.)
 
 ---
 
 ## Variables de Entorno
 
-Copia `.env.example` a `.env` y completa los valores:
+Crea `backend/.env` a partir de `.env.example`:
 
 ```env
-# Base de datos
-MONGODB_URI=mongodb://localhost:27017/usf_portal
-
-# Autenticación
-JWT_SECRET=tu_secreto_muy_seguro_aqui
+MONGODB_URI=mongodb+srv://USUARIO:PASSWORD@cluster0.xxx.mongodb.net/usf_portal
+JWT_SECRET=cadena_larga_y_aleatoria_para_produccion
 BCRYPT_SALT_ROUNDS=10
-
-# Pagos
-STRIPE_SECRET_KEY=sk_test_xxx
-STRIPE_WEBHOOK_SECRET=whsec_xxx
-
-# Servidor
 PORT=3000
 NODE_ENV=development
 ```
 
 ---
 
-## Convención de Commits
+## Instalación y Ejecución Local
 
-```
-feat(módulo): descripción     → nueva funcionalidad
-fix(módulo): descripción      → corrección de bug
-docs: descripción             → solo documentación
-test(módulo): descripción     → agregar pruebas
-chore: descripción            → configuración, dependencias
-```
-
-**Ejemplo:**
-```
-feat(inscripcion): agrega validación de choques de horario (RF-15, CP-06)
-```
-
----
-
-## Branches del Proyecto
-
-```
-main        → código en producción (solo via PR desde develop)
-develop     → integración de features
-│
-├── feature/modulo1-auth
-├── feature/modulo1-dashboard
-├── feature/modulo2-inscripcion
-├── feature/modulo2-calificaciones
-├── feature/modulo2-historial
-├── feature/modulo3-pagos
-└── feature/modulo3-notificaciones
-```
-
----
-
-## Cómo Configurar el Ambiente Local
-
+### Backend
 ```bash
-# 1. Clonar el repo
-git clone https://github.com/hypnoticdata777/proyectofinalequipoVip.git
-cd proyectofinalequipoVip/usf-portal
-
-# 2. Backend
-cd backend
+cd usf-portal/backend
 npm install
-cp .env.example .env
-# Editar .env y colocar la MONGODB_URI de tu cluster de Atlas
-# Formato: mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/usf_portal
-npm run dev            # Inicia en localhost:3000
-
-# 3. Verificar conexión
-# Deberías ver en consola: "MongoDB conectado" y "Servidor en puerto 3000"
-
-# 4. Frontend (en otra terminal)
-cd ../frontend
-npm install
-ng serve               # Inicia en localhost:4200
+cp .env.example .env   # Edita MONGODB_URI y JWT_SECRET
+node server.js         # Escucha en http://localhost:3000
 ```
 
-### Obtener la MONGODB_URI de Atlas
+### Frontend
+```bash
+cd usf-portal/frontend
+npm install
+ng serve               # Escucha en http://localhost:4200
+```
 
-1. En Atlas → tu cluster → botón **Connect**
-2. Seleccionar **Drivers**
-3. Driver: **Node.js**, versión **5.5 or later**
-4. Copiar la connection string y reemplazar `<password>` con tu contraseña de usuario de base de datos
-5. Pegar en el `.env` como `MONGODB_URI=mongodb+srv://...`
-
----
-
-## Requisitos
-
-- Node.js 20 LTS
-- Angular CLI (`npm install -g @angular/cli`)
-- MongoDB Community o MongoDB Atlas
-- Cuenta en MongoDB Atlas (free tier — crear cluster M0)
-- Cuenta de Stripe (modo sandbox para desarrollo, opcional en fase inicial)
+### Health check
+```
+GET http://localhost:3000/api/health
+→ { "status": "ok", "message": "USF Portal API corriendo" }
+```
 
 ---
 
-## Despliegue
+## Rutas del Frontend
 
-| Capa | Plataforma |
-|---|---|
-| Frontend | Vercel o Firebase Hosting |
-| Backend | Railway o Render |
-| Base de datos | MongoDB Atlas (free tier 512 MB) |
-| CI/CD | GitHub Actions |
+| Ruta | Componente | Acceso |
+|---|---|---|
+| `/auth/login` | LoginComponent | Público |
+| `/dashboard/alumno` | AlumnoDashboardComponent | Alumno |
+| `/dashboard/profesor` | ProfesorDashboardComponent | Profesor |
+| `/dashboard/admin` | AdminDashboardComponent | Admin |
+| `/inscripcion` | InscripcionComponent | Alumno |
+| `/inscripciones-admin` | InscripcionesAdminComponent | Admin |
+| `/calificaciones` | CalificacionesComponent | Profesor / Admin |
+| `/calificaciones/alumno` | CalificacionesAlumnoComponent | Alumno |
+| `/historial` | HistorialComponent | JWT (cualquier rol) |
+| `/notificaciones` | NotificacionesComponent | JWT (cualquier rol) |
+| `/pagos` | PagosComponent | Alumno / Admin |
 
 ---
 
-## Tablero de Proyecto
+## Modelos de Base de Datos
 
-El avance del proyecto se gestiona en el **GitHub Projects** de este repositorio.  
-Columnas: `Backlog → En Progreso → En Revisión → Completado`
+### User
+```
+nombre, apellido, email (unique), password (bcrypt), rol, matricula, foto, activo
+```
 
-Cada Issue corresponde a un requerimiento funcional (RF) o caso de prueba (CP) de la MTR.
+### Materia
+```
+clave (unique), nombre, creditos, cupoMaximo, cupoDisponible, horario[], seriacion[], profesor_id, periodo, activa
+```
+
+### Inscripcion
+```
+alumno_id, periodo, materias[], estado (pendiente/confirmada/cancelada)
+```
+
+### Calificacion
+```
+alumno_id, materia_id, profesor_id, periodo, parcial1, parcial2, parcial3, final, cerrada, fechaCierre
+```
+
+### Pago
+```
+alumno_id, concepto, monto, tipo (colegiaturas/tramite), estado, metodo (efectivo/transferencia/oxxo), referencia
+```
+
+### Adeudo
+```
+alumno_id, concepto, monto, estado (pendiente/pagado), periodo, registradoPor, fechaPago
+```
+
+### Notificacion
+```
+destinatario_id, titulo, mensaje, tipo (calificacion/horario/pago), leida, fecha
+```
+
+---
+
+## Estado del Proyecto
+
+| Módulo | Backend | Frontend | Estado |
+|---|---|---|---|
+| Autenticación (RF-01/02) | ✅ | ✅ | Completo |
+| Control de acceso por rol (RF-05) | ✅ | ✅ | Completo |
+| Inscripción con validaciones (RF-14/15) | ✅ | ✅ | Completo |
+| Calificaciones parciales (RF-20) | ✅ | ✅ | Completo |
+| Cierre de actas (RF-21) | ✅ | ✅ | Completo |
+| Notificaciones SSE (RF-22) | ✅ | ✅ | Completo |
+| Pagos locales (RF-30) | ✅ | ✅ | Completo |
+| Historial/Kardex (RF-38) | ✅ | ✅ | Completo |
+| Pruebas de carga Artillery (RF-54) | ✅ | — | Configurado |
+| Kardex PDF (RF-31) | ⏳ | ✅ (UI lista) | Pendiente backend |

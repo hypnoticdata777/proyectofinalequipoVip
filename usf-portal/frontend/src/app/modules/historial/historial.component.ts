@@ -1,3 +1,6 @@
+// Componente de historial académico / kardex (RF-38).
+// Muestra las calificaciones del alumno agrupadas por periodo con resumen estadístico.
+// También ofrece descarga del kardex en PDF si el backend lo implementa.
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -31,12 +34,14 @@ export class HistorialComponent implements OnInit {
   }
 
   cargarHistorial(alumnoId: string): void {
+    // El backend devuelve { alumno, resumen, historialPorPeriodo }
     this.apiService.get<any>(`historial/${alumnoId}`).subscribe({
       next: (data) => { this.historial = data; this.cargando = false; },
       error: () => { this.cargando = false; }
     });
   }
 
+  // Descarga el kardex como PDF usando el blob del servidor
   descargarPDF(): void {
     this.descargando = true;
     this.apiService.getBlob(`historial/${this.alumnoId}/pdf`).subscribe({

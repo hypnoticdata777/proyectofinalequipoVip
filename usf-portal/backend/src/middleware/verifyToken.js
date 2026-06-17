@@ -1,12 +1,13 @@
+// Middleware de autenticación JWT.
+// Verifica la firma del token en el header Authorization: Bearer <token>
+// y agrega req.user = { id, rol, nombre } para uso en los controladores.
 const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer <token>
+  const token = authHeader && authHeader.split(' ')[1]; // Extrae el token del esquema Bearer
 
-  if (!token) {
-    return res.status(401).json({ message: 'Token requerido' });
-  }
+  if (!token) return res.status(401).json({ message: 'Token requerido' });
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

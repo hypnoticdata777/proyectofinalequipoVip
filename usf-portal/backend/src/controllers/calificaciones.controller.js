@@ -1,6 +1,10 @@
+// Controlador base de calificaciones.
+// Rutas adicionales (mi-grupo, cerrar acta) están en calificacion.controller.js
+// e integradas en calificaciones.routes.js.
 const Calificacion = require('../models/Calificacion');
 const Notificacion = require('../models/Notificacion');
 
+// GET /api/calificaciones/:materiaId — devuelve todas las calificaciones de una materia (admin)
 const verPorMateria = async (req, res) => {
   try {
     const calificaciones = await Calificacion.find({ materia_id: req.params.materiaId })
@@ -11,6 +15,8 @@ const verPorMateria = async (req, res) => {
   }
 };
 
+// PUT /api/calificaciones/:id — registra parciales y final (profesor).
+// Emite notificación en tiempo real al alumno via Socket.io.
 const registrar = async (req, res) => {
   try {
     const cal = await Calificacion.findById(req.params.id);
@@ -21,7 +27,7 @@ const registrar = async (req, res) => {
     Object.assign(cal, { parcial1, parcial2, parcial3, final });
     await cal.save();
 
-    // Notificación en tiempo real
+    // Persiste notificación y la emite al alumno via Socket.io room
     const notif = await Notificacion.create({
       destinatario_id: cal.alumno_id,
       titulo: 'Calificación registrada',
@@ -38,18 +44,20 @@ const registrar = async (req, res) => {
   }
 };
 
+// GET /api/calificaciones/mis-calificaciones — devuelve calificaciones del alumno autenticado.
+// Mapea al campo 'final' del modelo para que el frontend lo reciba como calificacionFinal.
 const misCalificaciones = async (req, res) => {
   try {
     const calificaciones = await Calificacion.find({ alumno_id: req.user.id })
       .populate('materia_id', 'nombre clave');
-    
+
     const resultado = calificaciones.map(cal => ({
       _id: cal._id,
       materia: cal.materia_id,
       parcial1: cal.parcial1,
       parcial2: cal.parcial2,
       parcial3: cal.parcial3,
-      calificacionFinal: cal.final,
+      calificacionFinal: cal.final, // Alias legible para el frontend
       cerrada: cal.cerrada,
       periodo: cal.periodo
     }));

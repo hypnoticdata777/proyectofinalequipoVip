@@ -1,3 +1,7 @@
+// Servicio HTTP genérico — wrapper sobre HttpClient de Angular.
+// Todos los componentes hacen sus llamadas a la API a través de este servicio
+// para centralizar la URL base y el tipo de respuesta.
+// El JWT se agrega automáticamente por el JwtInterceptor, no aquí.
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -8,6 +12,7 @@ export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly base = environment.apiUrl;
 
+  // GET con query params opcionales: get('materias', { periodo: '2026-1' })
   get<T>(endpoint: string, params?: Record<string, string>): Observable<T> {
     let httpParams = new HttpParams();
     if (params) {
@@ -24,6 +29,7 @@ export class ApiService {
     return this.http.put<T>(`${this.base}/${endpoint}`, body);
   }
 
+  // getBlob para descarga de archivos binarios (PDF del kardex)
   getBlob(endpoint: string): Observable<Blob> {
     return this.http.get(`${this.base}/${endpoint}`, { responseType: 'blob' });
   }

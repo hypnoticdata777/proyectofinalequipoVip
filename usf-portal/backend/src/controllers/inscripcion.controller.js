@@ -1,16 +1,22 @@
+// Controlador de inscripciones (RF-14, RF-15).
+// Gestiona creación, consulta, listado y cancelación de inscripciones.
+// La lógica de validación (cupo, seriación, horario, adeudos) vive en inscripcion.service.js.
 const Inscripcion = require('../models/Inscripcion');
 const Materia = require('../models/Materia');
 const { validarInscripcion } = require('../services/inscripcion.service');
 
+// POST /api/inscripciones — el alumno inscribe un conjunto de materias en un periodo
 const crearInscripcion = async (req, res) => {
   try {
     const { materias, periodo } = req.body;
     const alumnoId = req.user.id;
 
+    // Lanza error si alguna validación de negocio falla
     await validarInscripcion(alumnoId, materias, periodo);
 
     const inscripcion = await Inscripcion.create({ alumno_id: alumnoId, periodo, materias, estado: 'confirmada' });
 
+    // Decrementa cupo disponible en cada materia inscrita
     await Materia.updateMany({ _id: { $in: materias } }, { $inc: { cupoDisponible: -1 } });
 
     const inscripcionPopulada = await Inscripcion.findById(inscripcion._id)
@@ -23,6 +29,7 @@ const crearInscripcion = async (req, res) => {
   }
 };
 
+// GET /api/inscripciones/mi-inscripcion — devuelve la inscripción activa del alumno autenticado
 const getMiInscripcion = async (req, res) => {
   try {
     const inscripcion = await Inscripcion.findOne({ alumno_id: req.user.id, estado: 'confirmada' })
@@ -35,6 +42,7 @@ const getMiInscripcion = async (req, res) => {
   }
 };
 
+// GET /api/inscripciones — lista todas las inscripciones (admin); acepta ?periodo= para filtrar
 const listarInscripciones = async (req, res) => {
   try {
     const { periodo } = req.query;
@@ -49,6 +57,8 @@ const listarInscripciones = async (req, res) => {
   }
 };
 
+// PUT /api/inscripciones/:id/cancelar  |  DELETE /api/inscripciones/:id
+// Cancela la inscripción y devuelve el cupo a las materias involucradas.
 const cancelarInscripcion = async (req, res) => {
   try {
     const inscripcion = await Inscripcion.findById(req.params.id);
