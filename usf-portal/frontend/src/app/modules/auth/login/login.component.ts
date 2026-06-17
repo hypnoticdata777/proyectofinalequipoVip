@@ -40,7 +40,7 @@ export class LoginComponent {
       next: () => { this.cargando = false; },
       error: (err) => {
         this.cargando = false;
-        this.error = err.error?.error || 'Credenciales inválidas.';
+        this.error = err.error?.message || err.error?.error || 'Credenciales inválidas.';
       },
     });
   }
@@ -63,7 +63,7 @@ export class LoginComponent {
       next: () => { this.cargando = false; },
       error: (err) => {
         this.cargando = false;
-        this.error = err.error?.error || 'Error al registrar la cuenta.';
+        this.error = err.error?.message || err.error?.error || `Error al registrar la cuenta (${err.status}).`;
       },
     });
   }
