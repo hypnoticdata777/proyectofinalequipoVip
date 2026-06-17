@@ -1,17 +1,23 @@
+// Controlador de materias.
+// Solo el admin puede crear/modificar/desactivar; cualquier usuario autenticado puede listar.
 const Materia = require('../models/Materia');
 
+// GET /api/materias — lista las materias activas; acepta ?periodo=XXXX para filtrar
 const listar = async (req, res) => {
   try {
     const { periodo } = req.query;
     const filtro = { activa: true };
     if (periodo) filtro.periodo = periodo;
-    const materias = await Materia.find(filtro).populate('profesor_id', 'nombre apellido').populate('seriacion', 'clave nombre');
+    const materias = await Materia.find(filtro)
+      .populate('profesor_id', 'nombre apellido')
+      .populate('seriacion', 'clave nombre');
     res.json(materias);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
+// POST /api/materias — crea una materia nueva (admin)
 const crear = async (req, res) => {
   try {
     const materia = await Materia.create(req.body);
@@ -21,6 +27,7 @@ const crear = async (req, res) => {
   }
 };
 
+// PUT /api/materias/:id — actualiza cupo, horario u otros campos (admin)
 const actualizar = async (req, res) => {
   try {
     const materia = await Materia.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -31,6 +38,7 @@ const actualizar = async (req, res) => {
   }
 };
 
+// DELETE /api/materias/:id — desactivación lógica, no borrado físico (admin)
 const eliminar = async (req, res) => {
   try {
     const materia = await Materia.findByIdAndUpdate(req.params.id, { activa: false }, { new: true });

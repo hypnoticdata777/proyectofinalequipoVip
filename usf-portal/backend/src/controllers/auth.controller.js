@@ -1,7 +1,10 @@
+// Controlador de autenticación (RF-01, RF-02).
+// Gestiona registro, login y perfil usando JWT + bcrypt.
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+// Genera un JWT con id, rol y nombre del usuario (expira en 24 h)
 const generarToken = (user) => {
   return jwt.sign(
     { id: user._id, rol: user.rol, nombre: user.nombre },
@@ -10,6 +13,7 @@ const generarToken = (user) => {
   );
 };
 
+// POST /api/auth/register — crea un usuario nuevo con contraseña hasheada
 const register = async (req, res) => {
   try {
     const { nombre, apellido, email, password, rol, matricula } = req.body;
@@ -34,23 +38,19 @@ const register = async (req, res) => {
   }
 };
 
+// POST /api/auth/login — verifica credenciales y devuelve JWT
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
-    }
+    if (!user) return res.status(401).json({ message: 'Credenciales inválidas' });
 
     const valido = await bcrypt.compare(password, user.password);
-    if (!valido) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
-    }
+    if (!valido) return res.status(401).json({ message: 'Credenciales inválidas' });
 
-    if (!user.activo) {
-      return res.status(403).json({ message: 'Cuenta desactivada' });
-    }
+    // No se revela el motivo exacto del rechazo al cliente por seguridad
+    if (!user.activo) return res.status(403).json({ message: 'Cuenta desactivada' });
 
     const token = generarToken(user);
     res.json({
@@ -62,6 +62,7 @@ const login = async (req, res) => {
   }
 };
 
+// GET /api/auth/me — devuelve el perfil del usuario autenticado (sin contraseña)
 const me = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
