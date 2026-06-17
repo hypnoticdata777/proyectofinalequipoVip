@@ -1,5 +1,6 @@
 const Calificacion = require('../models/Calificacion');
 const Notificacion = require('../models/Notificacion');
+const { emitirAUsuario } = require('../utils/sse-manager');
 
 const getMiGrupo = async (req, res) => {
   try {
@@ -45,10 +46,7 @@ const actualizarCalificacion = async (req, res) => {
       mensaje: `Tu calificación en ${calificacion.materia_id.nombre} ha sido actualizada. Final: ${calificacion.final ?? 'pendiente'}`,
     });
 
-    const io = req.app.get('io');
-    if (io) {
-      io.to(`user_${alumnoId}`).emit('nueva_notificacion', notif);
-    }
+    emitirAUsuario(alumnoId, 'nueva_notificacion', notif);
 
     res.json(calificacion);
   } catch (error) {
