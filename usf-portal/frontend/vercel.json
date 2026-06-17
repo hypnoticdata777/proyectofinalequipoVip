@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://proyectofinalequipovip-production.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "buildCommand": "npm run build -- --configuration production",
+  "outputDirectory": "dist/usf-portal-frontend/browser"
+}
