@@ -24,7 +24,7 @@ app.set('io', io);
 // Rutas
 app.use('/api/auth', require('./src/routes/auth.routes'));
 app.use('/api/materias', require('./src/routes/materias.routes'));
-app.use('/api/inscripciones', require('./src/routes/inscripciones.routes'));
+app.use('/api/inscripciones', require('./src/routes/inscripcion.routes'));
 app.use('/api/calificaciones', require('./src/routes/calificaciones.routes'));
 app.use('/api/historial', require('./src/routes/historial.routes'));
 app.use('/api/pagos', require('./src/routes/pagos.routes'));
