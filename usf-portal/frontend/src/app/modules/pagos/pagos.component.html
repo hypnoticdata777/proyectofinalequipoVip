@@ -1,0 +1,103 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Portal — Pagos</span>
+      <a [routerLink]="rol === 'admin' ? '/dashboard/admin' : '/dashboard/alumno'" class="btn-back">← Volver</a>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="section-header">
+      <h2 class="section-title">{{ rol === 'alumno' ? 'Mis Pagos' : 'Gestión de Pagos' }}</h2>
+      <button *ngIf="rol === 'admin'" class="btn-primary" (click)="mostrarFormulario = !mostrarFormulario">
+        {{ mostrarFormulario ? 'Cancelar' : '+ Registrar Pago' }}
+      </button>
+    </div>
+
+    <div *ngIf="mensaje" class="mensaje-exito">{{ mensaje }}</div>
+
+    <!-- Formulario solo para admin -->
+    <div *ngIf="mostrarFormulario && rol === 'admin'" class="form-card">
+      <h3>Nuevo Pago</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>ID del Alumno</label>
+          <input type="text" [(ngModel)]="nuevoPago.alumno_id" placeholder="ObjectId del alumno" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Concepto</label>
+          <input type="text" [(ngModel)]="nuevoPago.concepto" placeholder="Ej. Colegiatura Enero 2026" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Monto ($)</label>
+          <input type="number" [(ngModel)]="nuevoPago.monto" min="1" class="form-input">
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select [(ngModel)]="nuevoPago.tipo" class="form-input">
+            <option value="colegiaturas">Colegiaturas</option>
+            <option value="tramite">Trámite</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Método de Pago</label>
+          <select [(ngModel)]="nuevoPago.metodo" class="form-input">
+            <option value="efectivo">Efectivo</option>
+            <option value="transferencia">Transferencia</option>
+            <option value="oxxo">OXXO</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" (click)="registrarPago()" [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : 'Registrar' }}
+      </button>
+    </div>
+
+    <div *ngIf="cargando" class="loader-inline">
+      <div class="spinner-sm"></div> Cargando pagos...
+    </div>
+
+    <div *ngIf="!cargando" class="tabla-container">
+      <table class="tabla-pagos" *ngIf="pagos.length > 0">
+        <thead>
+          <tr>
+            <th>Referencia</th>
+            <th>Concepto</th>
+            <th>Tipo</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th *ngIf="rol === 'admin'">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pago of pagos">
+            <td class="referencia">{{ pago.referencia }}</td>
+            <td>{{ pago.concepto }}</td>
+            <td>{{ pago.tipo }}</td>
+            <td class="monto">${{ pago.monto | number:'1.2-2' }}</td>
+            <td>{{ pago.metodo || '-' }}</td>
+            <td>{{ pago.fecha | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <span [class]="pago.estado === 'pagado' ? 'badge-pagado' : pago.estado === 'fallido' ? 'badge-fallido' : 'badge-pendiente'">
+                {{ pago.estado }}
+              </span>
+            </td>
+            <td *ngIf="rol === 'admin'">
+              <button *ngIf="pago.estado === 'pendiente'" class="btn-confirmar" (click)="confirmarPago(pago)">
+                Confirmar
+              </button>
+              <span *ngIf="pago.estado !== 'pendiente'">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div *ngIf="pagos.length === 0" class="sin-datos">
+        <p>No hay pagos registrados.</p>
+      </div>
+    </div>
+  </main>
+</div>

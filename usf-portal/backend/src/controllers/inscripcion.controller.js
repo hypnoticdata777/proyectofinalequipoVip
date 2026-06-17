@@ -9,12 +9,13 @@ const crearInscripcion = async (req, res) => {
 
     await validarInscripcion(alumnoId, materias, periodo);
 
-    const inscripcion = await Inscripcion.create({ alumno: alumnoId, periodo, materias, estado: 'confirmada' });
+    const inscripcion = await Inscripcion.create({ alumno_id: alumnoId, periodo, materias, estado: 'confirmada' });
 
-    // Decrementar cupo disponible en cada materia
     await Materia.updateMany({ _id: { $in: materias } }, { $inc: { cupoDisponible: -1 } });
 
-    const inscripcionPopulada = await Inscripcion.findById(inscripcion._id).populate('materias').populate('alumno', 'nombre apellido matricula');
+    const inscripcionPopulada = await Inscripcion.findById(inscripcion._id)
+      .populate('materias')
+      .populate('alumno_id', 'nombre apellido matricula');
     res.status(201).json(inscripcionPopulada);
   } catch (error) {
     const codigo = error.message.split(':')[0];
@@ -24,9 +25,9 @@ const crearInscripcion = async (req, res) => {
 
 const getMiInscripcion = async (req, res) => {
   try {
-    const inscripcion = await Inscripcion.findOne({ alumno: req.user.id, estado: 'confirmada' })
-      .populate({ path: 'materias', populate: { path: 'profesor', select: 'nombre apellido' } })
-      .populate('alumno', 'nombre apellido matricula');
+    const inscripcion = await Inscripcion.findOne({ alumno_id: req.user.id, estado: 'confirmada' })
+      .populate({ path: 'materias', populate: { path: 'profesor_id', select: 'nombre apellido' } })
+      .populate('alumno_id', 'nombre apellido matricula');
     if (!inscripcion) return res.status(404).json({ error: 'No tienes una inscripción activa.' });
     res.json(inscripcion);
   } catch (error) {
@@ -40,7 +41,7 @@ const listarInscripciones = async (req, res) => {
     const filtro = {};
     if (periodo) filtro.periodo = periodo;
     const inscripciones = await Inscripcion.find(filtro)
-      .populate('alumno', 'nombre apellido matricula email')
+      .populate('alumno_id', 'nombre apellido matricula email')
       .populate('materias', 'nombre clave creditos');
     res.json(inscripciones);
   } catch (error) {
@@ -58,7 +59,6 @@ const cancelarInscripcion = async (req, res) => {
     inscripcion.estado = 'cancelada';
     await inscripcion.save();
 
-    // Devolver cupo a las materias
     await Materia.updateMany({ _id: { $in: materiasAntes } }, { $inc: { cupoDisponible: 1 } });
 
     res.json({ mensaje: 'Inscripción cancelada exitosamente.', inscripcion });

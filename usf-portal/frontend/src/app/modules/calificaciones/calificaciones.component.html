@@ -36,8 +36,8 @@
         </thead>
         <tbody>
           <tr *ngFor="let cal of calificaciones">
-            <td>{{ cal.alumno?.nombre }} {{ cal.alumno?.apellido }}</td>
-            <td>{{ cal.alumno?.matricula || 'N/A' }}</td>
+            <td>{{ cal.alumno_id?.nombre }} {{ cal.alumno_id?.apellido }}</td>
+            <td>{{ cal.alumno_id?.matricula || 'N/A' }}</td>
             <td>
               <input *ngIf="!cal.cerrada" type="number" [(ngModel)]="cal.parcial1" min="0" max="100" class="input-calificacion">
               <span *ngIf="cal.cerrada">{{ cal.parcial1 || '-' }}</span>
@@ -51,10 +51,10 @@
               <span *ngIf="cal.cerrada">{{ cal.parcial3 || '-' }}</span>
             </td>
             <td>
-              <span [class]="cal.calificacionFinal >= 60 ? 'badge-aprobado' : 'badge-reprobado'" *ngIf="cal.calificacionFinal !== null">
-                {{ cal.calificacionFinal?.toFixed(1) }}
+              <span [class]="cal.final >= 60 ? 'badge-aprobado' : 'badge-reprobado'" *ngIf="cal.final !== null">
+                {{ cal.final?.toFixed(1) }}
               </span>
-              <span *ngIf="cal.calificacionFinal === null">-</span>
+              <span *ngIf="cal.final === null">-</span>
             </td>
             <td>
               <span class="badge-cerrado" *ngIf="cal.cerrada">Acta Cerrada</span>

@@ -9,6 +9,15 @@ const listarPorAlumno = async (req, res) => {
   }
 };
 
+const misPagos = async (req, res) => {
+  try {
+    const pagos = await Pago.find({ alumno_id: req.user.id }).sort({ fecha: -1 });
+    res.json(pagos);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
 const crearPago = async (req, res) => {
   try {
     const { alumno_id, concepto, monto, tipo, metodo } = req.body;
@@ -34,4 +43,4 @@ const marcarPagado = async (req, res) => {
   }
 };
 
-module.exports = { listarPorAlumno, crearPago, marcarPagado };
+module.exports = { listarPorAlumno, misPagos, crearPago, marcarPagado };

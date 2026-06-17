@@ -66,6 +66,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./modules/historial/historial.component').then(m => m.HistorialComponent),
   },
+  {
+    path: 'notificaciones',
+    canActivate: [authGuard],
+    loadComponent: () => import('./modules/notificaciones/notificaciones.component').then(m => m.NotificacionesComponent),
+  },
+  {
+    path: 'pagos',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['alumno', 'admin'] },
+    loadComponent: () => import('./modules/pagos/pagos.component').then(m => m.PagosComponent),
+  },
 
   {
   path: 'inscripciones-admin',

@@ -1,0 +1,75 @@
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badge-contador {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.notif-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+
+  &:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+  &.notif-no-leida {
+    border-left: 4px solid #3b82f6;
+    background: #eff6ff;
+  }
+}
+
+.notif-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.notif-tipo {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &.badge-calificacion { background: #dbeafe; color: #1d4ed8; }
+  &.badge-pago { background: #d1fae5; color: #065f46; }
+  &.badge-horario { background: #fef3c7; color: #92400e; }
+}
+
+.notif-estado { color: #3b82f6; font-weight: 600; }
+
+.notif-titulo {
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+  color: #111827;
+}
+
+.notif-mensaje {
+  margin: 0;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.sin-datos {
+  text-align: center;
+  padding: 3rem;
+  color: #9ca3af;
+}

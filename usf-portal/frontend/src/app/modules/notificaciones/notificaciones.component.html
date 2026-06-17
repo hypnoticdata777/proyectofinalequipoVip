@@ -1,0 +1,43 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Portal — Notificaciones</span>
+      <a routerLink="/dashboard/alumno" class="btn-back">← Volver</a>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <h2 class="section-title">
+      Mis Notificaciones
+      <span class="badge-contador" *ngIf="(notifService.noLeidas$ | async)! > 0">
+        {{ notifService.noLeidas$ | async }} sin leer
+      </span>
+    </h2>
+
+    <div *ngIf="cargando" class="loader-inline">
+      <div class="spinner-sm"></div> Cargando notificaciones...
+    </div>
+
+    <div *ngIf="!cargando">
+      <div
+        *ngFor="let notif of (notifService.notificaciones$ | async)"
+        class="notif-card"
+        [class.notif-no-leida]="!notif.leida"
+        (click)="marcarLeida(notif)"
+      >
+        <div class="notif-header">
+          <span class="notif-tipo badge-{{ notif.tipo }}">{{ notif.tipo }}</span>
+          <span class="notif-fecha">{{ notif.fecha | date: 'dd/MM/yyyy HH:mm' }}</span>
+          <span class="notif-estado" *ngIf="!notif.leida">● Nueva</span>
+        </div>
+        <p class="notif-titulo">{{ notif.titulo }}</p>
+        <p class="notif-mensaje">{{ notif.mensaje }}</p>
+      </div>
+
+      <div *ngIf="(notifService.notificaciones$ | async)?.length === 0" class="sin-datos">
+        <p>No tienes notificaciones por el momento.</p>
+      </div>
+    </div>
+  </main>
+</div>
