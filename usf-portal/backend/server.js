@@ -29,6 +29,7 @@ app.use('/api/calificaciones', require('./src/routes/calificaciones.routes'));
 app.use('/api/historial', require('./src/routes/historial.routes'));
 app.use('/api/pagos', require('./src/routes/pagos.routes'));
 app.use('/api/notificaciones', require('./src/routes/notificaciones.routes'));
+app.use('/api/adeudos', require('./src/routes/adeudo.routes'));
 
 // Health check
 app.get('/api/health', (req, res) => {
