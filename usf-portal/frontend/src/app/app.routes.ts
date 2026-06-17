@@ -66,6 +66,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./modules/historial/historial.component').then(m => m.HistorialComponent),
   },
+  {
+    path: 'notificaciones',
+    canActivate: [authGuard],
+    loadComponent: () => import('./modules/notificaciones/notificaciones.component').then(m => m.NotificacionesComponent),
+  },
 
   {
   path: 'inscripciones-admin',
