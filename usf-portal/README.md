@@ -4,6 +4,170 @@
 
 ---
 
+## Inicio Rápido — Descargar el ZIP y Ejecutar en Windows
+
+Esta es la ruta más sencilla para una persona que no utiliza Git.
+
+### 1. Instalar los requisitos
+
+Antes de descargar el proyecto, instala:
+
+- **Node.js 20 LTS o superior:** https://nodejs.org/
+- Una cuenta o conexión válida de **MongoDB Atlas:** https://www.mongodb.com/atlas
+- Un editor como Visual Studio Code es opcional.
+
+Después de instalar Node.js, abre PowerShell y comprueba:
+
+```powershell
+node --version
+npm --version
+```
+
+Ambos comandos deben mostrar un número de versión.
+
+### 2. Descargar y descomprimir el proyecto
+
+1. Abre el repositorio:
+   `https://github.com/hypnoticdata777/proyectofinalequipoVip`
+2. Pulsa **Code**.
+3. Pulsa **Download ZIP**.
+4. Abre la carpeta de Descargas.
+5. Haz clic derecho sobre el ZIP y selecciona **Extraer todo**.
+6. Abre la carpeta extraída.
+
+Dentro debe existir esta ruta:
+
+```text
+proyectofinalequipoVip-main/
+└── usf-portal/
+    ├── backend/
+    └── frontend/
+```
+
+> Todos los comandos siguientes deben ejecutarse dentro de la carpeta extraída, no dentro del archivo ZIP.
+
+### 3. Configurar el backend
+
+Abre PowerShell dentro de `usf-portal/backend`.
+
+Una forma sencilla es abrir esa carpeta en el Explorador, hacer clic en la barra de dirección, escribir `powershell` y presionar Enter.
+
+Ejecuta:
+
+```powershell
+npm install
+Copy-Item .env.example .env
+notepad .env
+```
+
+En `.env`, reemplaza los valores de ejemplo:
+
+```env
+MONGODB_URI=mongodb+srv://USUARIO:PASSWORD@cluster.mongodb.net/usf_portal
+JWT_SECRET=escribe_una_clave_larga_unica_y_dificil_de_adivinar
+BCRYPT_SALT_ROUNDS=10
+PORT=3000
+NODE_ENV=development
+```
+
+- `MONGODB_URI` debe ser la cadena de conexión real de MongoDB Atlas.
+- `JWT_SECRET` no debe compartirse ni subirse a GitHub.
+- Si la contraseña de MongoDB contiene caracteres especiales, utiliza la cadena de conexión generada por Atlas y codifica correctamente la contraseña.
+
+Guarda y cierra Bloc de notas. Luego inicia el backend:
+
+```powershell
+npm start
+```
+
+Debe mostrar mensajes similares a:
+
+```text
+Servidor en puerto 3000
+MongoDB conectado
+```
+
+Déjalo abierto.
+
+### 4. Configurar e iniciar el frontend
+
+Abre **otra ventana de PowerShell** dentro de `usf-portal/frontend` y ejecuta:
+
+```powershell
+npm install
+npm start
+```
+
+Cuando termine, abre:
+
+```text
+http://localhost:4200
+```
+
+El frontend local ya está configurado para llamar al backend en:
+
+```text
+http://localhost:3000/api
+```
+
+### 5. Confirmar que funciona
+
+Abre primero:
+
+```text
+http://localhost:3000/api/health
+```
+
+Debe responder:
+
+```json
+{"status":"ok","message":"USF Portal API corriendo"}
+```
+
+Después abre `http://localhost:4200`, registra una cuenta e inicia sesión.
+
+### 6. Orden recomendado para probar el sistema
+
+1. Crea una cuenta con rol `admin`.
+2. Crea una cuenta con rol `profesor`.
+3. Entra como admin y crea una materia para el periodo `2026-1`.
+4. Asigna la materia al profesor.
+5. Crea una cuenta con rol `alumno`.
+6. Entra como alumno y confirma la inscripción.
+7. Entra como profesor y captura las calificaciones.
+8. Regresa como alumno y consulta calificaciones e historial.
+
+> El registro público de administradores y profesores se conserva para pruebas académicas. En una producción real debe deshabilitarse.
+
+### 7. Cómo detener todo correctamente
+
+No necesitas cerrar MongoDB Atlas, Vercel ni Railway para terminar una sesión de desarrollo.
+
+En cada ventana de PowerShell donde esté ejecutándose un servidor:
+
+1. Presiona `Ctrl + C`.
+2. Si PowerShell pregunta si deseas finalizar el trabajo, responde `S`.
+3. Espera a que vuelva a aparecer el prompt.
+4. Ya puedes cerrar las ventanas.
+
+Esto detiene Angular y Express correctamente. No borra datos de MongoDB.
+
+Para iniciar otra vez:
+
+```powershell
+# Ventana 1
+cd usf-portal\backend
+npm start
+
+# Ventana 2
+cd usf-portal\frontend
+npm start
+```
+
+No necesitas repetir `npm install` cada vez; solo cuando sea la primera instalación o cambien las dependencias.
+
+---
+
 ## Equipo VIP
 
 | Integrante | Rol | Módulo principal |
@@ -159,6 +323,7 @@ usf-portal/
 |---|---|---|---|
 | POST | `/api/auth/register` | Público | Registrar usuario con rol |
 | POST | `/api/auth/login` | Público | Login → devuelve JWT |
+| GET | `/api/auth/profesores` | Admin | Listar profesores activos |
 | GET | `/api/auth/me` | JWT | Perfil del usuario autenticado |
 
 ### Materias
@@ -235,14 +400,18 @@ El token se pasa como query param porque `EventSource` no soporta headers person
 
 ## Validaciones de Inscripción (RF-15)
 
-El servicio `inscripcion.service.js` ejecuta 4 validaciones antes de confirmar:
+El servicio `inscripcion.service.js` valida antes de confirmar:
 
-1. **CP-05** — Sin adeudos o pagos pendientes
+1. **CP-05** — Sin pagos pendientes
 2. **CP-04** — La materia tiene cupo disponible (`cupoDisponible > 0`)
 3. **CP-03** — Seriación completa (todas las prerequisitos aprobadas con ≥ 60)
 4. **CP-06** — Sin choque de horario con otras materias ya inscritas
+5. La materia está activa y pertenece al periodo solicitado
+6. No existe choque entre materias seleccionadas en la misma operación
+7. La materia tiene profesor asignado
+8. El alumno no tiene otra inscripción confirmada en el mismo periodo
 
-Si alguna falla, devuelve HTTP 400 con un código legible (`SIN_CUPO`, `CRUCE_HORARIO`, etc.)
+Si alguna falla, devuelve HTTP 400 con un mensaje que describe la condición.
 
 ---
 
@@ -260,21 +429,23 @@ NODE_ENV=development
 
 ---
 
-## Instalación y Ejecución Local
+## Instalación y Ejecución Local — Resumen
+
+La guía completa para descargar el ZIP está al inicio de este README.
 
 ### Backend
-```bash
+```powershell
 cd usf-portal/backend
 npm install
-cp .env.example .env   # Edita MONGODB_URI y JWT_SECRET
-node server.js         # Escucha en http://localhost:3000
+Copy-Item .env.example .env
+npm start
 ```
 
 ### Frontend
-```bash
+```powershell
 cd usf-portal/frontend
 npm install
-ng serve               # Escucha en http://localhost:4200
+npm start
 ```
 
 ### Health check
@@ -295,6 +466,7 @@ GET http://localhost:3000/api/health
 | `/dashboard/admin` | AdminDashboardComponent | Admin |
 | `/inscripcion` | InscripcionComponent | Alumno |
 | `/inscripciones-admin` | InscripcionesAdminComponent | Admin |
+| `/materias-admin` | MateriasAdminComponent | Admin |
 | `/calificaciones` | CalificacionesComponent | Profesor / Admin |
 | `/calificaciones/alumno` | CalificacionesAlumnoComponent | Alumno |
 | `/historial` | HistorialComponent | JWT (cualquier rol) |
@@ -352,7 +524,10 @@ destinatario_id, titulo, mensaje, tipo (calificacion/horario/pago), leida, fecha
 | Calificaciones parciales (RF-20) | ✅ | ✅ | Completo |
 | Cierre de actas (RF-21) | ✅ | ✅ | Completo |
 | Notificaciones SSE (RF-22) | ✅ | ✅ | Completo |
-| Pagos locales (RF-30) | ✅ | ✅ | Completo |
+| Gestión de materias y profesores | ✅ | ✅ | Completo |
+| Generación automática de actas | ✅ | ✅ | Completo |
+| Pagos locales (RF-30) | ✅ | ⚠️ | Interfaz admin parcial |
+| Adeudos | ✅ | ⚠️ | Sin interfaz admin completa |
 | Historial/Kardex (RF-38) | ✅ | ✅ | Completo |
 | Pruebas de carga Artillery (RF-54) | ✅ | — | Configurado |
 | Kardex PDF (RF-31) | ⏳ | ✅ (UI lista) | Pendiente backend |
