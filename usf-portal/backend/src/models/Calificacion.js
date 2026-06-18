@@ -15,4 +15,9 @@ const calificacionSchema = new mongoose.Schema({
   fechaCierre: { type: Date }
 }, { timestamps: true });
 
+calificacionSchema.index(
+  { alumno_id: 1, materia_id: 1, periodo: 1 },
+  { unique: true }
+);
+
 module.exports = mongoose.model('Calificacion', calificacionSchema);

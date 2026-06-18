@@ -56,7 +56,10 @@
             <tr *ngFor="let materia of inscripcion.materias">
               <td>{{ materia.clave }}</td>
               <td>{{ materia.nombre }}</td>
-              <td>{{ materia.profesor?.nombre }} {{ materia.profesor?.apellido }}</td>
+              <td>
+                {{ materia.profesor_id?.nombre || 'Por asignar' }}
+                {{ materia.profesor_id?.apellido }}
+              </td>
               <td>{{ materia.creditos }}</td>
               <td>
                 <span *ngFor="let h of materia.horario" class="horario-badge">

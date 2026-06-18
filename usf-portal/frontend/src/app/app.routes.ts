@@ -79,11 +79,17 @@ export const routes: Routes = [
   },
 
   {
-  path: 'inscripciones-admin',
-  canActivate: [authGuard, roleGuard],
-  data: { roles: ['admin'] },
-  loadComponent: () => import('./modules/inscripciones-admin/inscripciones-admin.component').then(m => m.InscripcionesAdminComponent),
-},
+    path: 'inscripciones-admin',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () => import('./modules/inscripciones-admin/inscripciones-admin.component').then(m => m.InscripcionesAdminComponent),
+  },
+  {
+    path: 'materias-admin',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () => import('./modules/materias-admin/materias-admin.component').then(m => m.MateriasAdminComponent),
+  },
 
   { path: '**', redirectTo: 'auth/login' },
 ];

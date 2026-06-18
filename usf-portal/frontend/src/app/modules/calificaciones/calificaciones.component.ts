@@ -41,8 +41,18 @@ export class CalificacionesComponent implements OnInit {
   }
 
   cargarMaterias(): void {
-    this.apiService.get<any[]>('materias').subscribe({
-      next: (mats) => { this.materias = mats; this.cargandoMaterias = false; },
+    this.authService.getCurrentUser().subscribe({
+      next: (usuario) => {
+        this.apiService.get<any[]>('materias').subscribe({
+          next: (mats) => {
+            this.materias = this.rolUsuario === 'profesor'
+              ? mats.filter(m => m.profesor_id?._id === usuario._id || m.profesor_id === usuario._id)
+              : mats;
+            this.cargandoMaterias = false;
+          },
+          error: () => { this.cargandoMaterias = false; }
+        });
+      },
       error: () => { this.cargandoMaterias = false; }
     });
   }
@@ -65,7 +75,7 @@ export class CalificacionesComponent implements OnInit {
     this.mensajes[cal._id] = '';
 
     // El backend recalcula 'final' automáticamente a partir de los parciales
-    const payload = { parcial1: cal.parcial1, parcial2: cal.parcial2, parcial3: cal.parcial3, final: cal.final };
+    const payload = { parcial1: cal.parcial1, parcial2: cal.parcial2, parcial3: cal.parcial3 };
 
     this.apiService.put<any>(`calificaciones/${cal._id}`, payload).subscribe({
       next: (calActualizada) => {

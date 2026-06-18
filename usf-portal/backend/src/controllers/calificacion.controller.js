@@ -2,6 +2,8 @@
 // Contiene los endpoints específicos de profesor: mi-grupo, actualizar con
 // notificación SSE en tiempo real, cerrar acta y consulta por alumno.
 const Calificacion = require('../models/Calificacion');
+const Inscripcion = require('../models/Inscripcion');
+const Materia = require('../models/Materia');
 const Notificacion = require('../models/Notificacion');
 const { emitirAUsuario } = require('../utils/sse-manager');
 
@@ -9,7 +11,52 @@ const { emitirAUsuario } = require('../utils/sse-manager');
 const getMiGrupo = async (req, res) => {
   try {
     const { materiaId } = req.params;
-    const calificaciones = await Calificacion.find({ materia_id: materiaId, profesor_id: req.user.id })
+    const materia = await Materia.findById(materiaId).select('profesor_id periodo');
+    if (!materia) return res.status(404).json({ error: 'Materia no encontrada.' });
+
+    if (
+      req.user.rol === 'profesor' &&
+      materia.profesor_id?.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ error: 'Esta materia no está asignada a tu cuenta.' });
+    }
+
+    // Compatibilidad con inscripciones creadas antes de que se generaran actas automáticamente.
+    if (materia.profesor_id) {
+      const inscripciones = await Inscripcion.find({
+        materias: materiaId,
+        periodo: materia.periodo,
+        estado: 'confirmada'
+      }).select('alumno_id');
+
+      if (inscripciones.length > 0) {
+        await Calificacion.bulkWrite(
+          inscripciones.map(inscripcion => ({
+            updateOne: {
+              filter: {
+                alumno_id: inscripcion.alumno_id,
+                materia_id: materiaId,
+                periodo: materia.periodo
+              },
+              update: {
+                $setOnInsert: {
+                  alumno_id: inscripcion.alumno_id,
+                  materia_id: materiaId,
+                  profesor_id: materia.profesor_id,
+                  periodo: materia.periodo
+                }
+              },
+              upsert: true
+            }
+          }))
+        );
+      }
+    }
+
+    const filtro = { materia_id: materiaId };
+    if (req.user.rol === 'profesor') filtro.profesor_id = req.user.id;
+
+    const calificaciones = await Calificacion.find(filtro)
       .populate('alumno_id', 'nombre apellido matricula email')
       .populate('materia_id', 'nombre clave periodo');
     res.json(calificaciones);
@@ -28,6 +75,12 @@ const actualizarCalificacion = async (req, res) => {
 
     if (!calificacion) return res.status(404).json({ error: 'Calificación no encontrada.' });
     if (calificacion.cerrada) return res.status(403).json({ error: 'El acta está cerrada.' });
+    if (
+      req.user.rol === 'profesor' &&
+      calificacion.profesor_id.toString() !== req.user.id
+    ) {
+      return res.status(403).json({ error: 'No tienes permisos para modificar esta calificación.' });
+    }
 
     const { parcial1, parcial2, parcial3, final } = req.body;
     if (parcial1 !== undefined) calificacion.parcial1 = parcial1;

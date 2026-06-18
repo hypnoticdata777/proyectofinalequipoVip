@@ -1,0 +1,101 @@
+<div class="dashboard-wrapper">
+  <header class="header-usf">
+    <div class="header-content">
+      <span class="logo-text">USF Admin — Materias</span>
+      <a routerLink="/dashboard/admin" class="btn-back">← Volver</a>
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="panel">
+      <div class="panel-title">
+        <div>
+          <h1>{{ editandoId ? 'Editar materia' : 'Nueva materia' }}</h1>
+          <p>Crea el grupo, define su horario y asígnalo a un profesor.</p>
+        </div>
+        <button *ngIf="editandoId" class="btn-secundario" (click)="cancelarEdicion()">Cancelar edición</button>
+      </div>
+
+      <div class="alert exito" *ngIf="mensaje">{{ mensaje }}</div>
+      <div class="alert error" *ngIf="error">{{ error }}</div>
+
+      <div class="form-grid">
+        <label>Clave<input [(ngModel)]="form.clave" placeholder="MAT-101"></label>
+        <label>Nombre<input [(ngModel)]="form.nombre" placeholder="Matemáticas I"></label>
+        <label>Periodo<input [(ngModel)]="form.periodo" placeholder="2026-1"></label>
+        <label>Profesor
+          <select [(ngModel)]="form.profesor_id">
+            <option value="">-- Selecciona profesor --</option>
+            <option *ngFor="let profesor of profesores" [value]="profesor._id">
+              {{ profesor.nombre }} {{ profesor.apellido }} — {{ profesor.email }}
+            </option>
+          </select>
+        </label>
+        <label>Créditos<input type="number" min="1" [(ngModel)]="form.creditos"></label>
+        <label>Cupo máximo<input type="number" min="1" [(ngModel)]="form.cupoMaximo"></label>
+        <label>Cupo disponible<input type="number" min="0" [(ngModel)]="form.cupoDisponible"></label>
+      </div>
+
+      <div class="horarios">
+        <div class="horarios-title">
+          <h2>Horario</h2>
+          <button class="btn-secundario" (click)="agregarHorario()">+ Agregar bloque</button>
+        </div>
+        <div class="horario-row" *ngFor="let horario of form.horario; let i = index">
+          <select [(ngModel)]="horario.dia">
+            <option *ngFor="let dia of ['lunes','martes','miércoles','jueves','viernes','sábado']" [value]="dia">{{ dia }}</option>
+          </select>
+          <input type="time" [(ngModel)]="horario.horaInicio">
+          <input type="time" [(ngModel)]="horario.horaFin">
+          <input [(ngModel)]="horario.salon" placeholder="Salón">
+          <button class="btn-icono" [disabled]="form.horario.length === 1" (click)="quitarHorario(i)">✕</button>
+        </div>
+      </div>
+
+      <button class="btn-guardar" [disabled]="guardando" (click)="guardar()">
+        {{ guardando ? 'Guardando...' : (editandoId ? 'Actualizar materia' : 'Crear materia') }}
+      </button>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <div>
+          <h2>Materias activas</h2>
+          <p>{{ materias.length }} grupos disponibles</p>
+        </div>
+      </div>
+
+      <div class="sin-datos" *ngIf="!cargando && materias.length === 0">
+        Todavía no hay materias. Crea la primera arriba.
+      </div>
+
+      <div class="tabla-wrapper" *ngIf="materias.length > 0">
+        <table>
+          <thead>
+            <tr>
+              <th>Materia</th><th>Profesor</th><th>Periodo</th><th>Horario</th><th>Cupo</th><th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let materia of materias">
+              <td><strong>{{ materia.clave }}</strong><br>{{ materia.nombre }}</td>
+              <td>{{ materia.profesor_id?.nombre || 'Sin asignar' }} {{ materia.profesor_id?.apellido }}</td>
+              <td>{{ materia.periodo }}</td>
+              <td>
+                <span class="horario-tag" *ngFor="let h of materia.horario">
+                  {{ h.dia }} {{ h.horaInicio }}–{{ h.horaFin }}
+                </span>
+              </td>
+              <td>{{ materia.cupoDisponible }}/{{ materia.cupoMaximo }}</td>
+              <td class="acciones">
+                <button class="btn-editar" (click)="editar(materia)">Editar</button>
+                <button class="btn-eliminar" (click)="desactivar(materia)">Desactivar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>

@@ -6,7 +6,7 @@ const checkRole = require('../middleware/checkRole');
 
 // Rutas específicas primero para evitar conflictos con parámetros genéricos
 router.get('/mis-calificaciones', verifyToken, checkRole(['alumno']), misCalificaciones);
-router.get('/mi-grupo/:materiaId', verifyToken, checkRole(['profesor']), getMiGrupo);
+router.get('/mi-grupo/:materiaId', verifyToken, checkRole(['profesor', 'admin']), getMiGrupo);
 router.get('/alumno/:alumnoId', verifyToken, getCalificacionesAlumno);
 
 router.put('/:id/cerrar', verifyToken, checkRole(['admin']), cerrarActa);

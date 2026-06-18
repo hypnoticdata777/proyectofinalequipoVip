@@ -51,10 +51,10 @@
               <span *ngIf="cal.cerrada">{{ cal.parcial3 || '-' }}</span>
             </td>
             <td>
-              <span [class]="cal.final >= 60 ? 'badge-aprobado' : 'badge-reprobado'" *ngIf="cal.final !== null">
+              <span [class]="cal.final >= 60 ? 'badge-aprobado' : 'badge-reprobado'" *ngIf="cal.final != null">
                 {{ cal.final?.toFixed(1) }}
               </span>
-              <span *ngIf="cal.final === null">-</span>
+              <span *ngIf="cal.final == null">-</span>
             </td>
             <td>
               <span class="badge-cerrado" *ngIf="cal.cerrada">Acta Cerrada</span>

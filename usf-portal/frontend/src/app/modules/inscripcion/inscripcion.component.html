@@ -46,7 +46,12 @@
             <tr *ngFor="let materia of materias" [class.seleccionada]="estaSeleccionada(materia._id)">
               <td>{{ materia.clave }}</td>
               <td>{{ materia.nombre }}</td>
-              <td>{{ materia.profesor?.nombre }} {{ materia.profesor?.apellido }}</td>
+              <td>
+                <span *ngIf="materia.profesor_id; else sinProfesor">
+                  {{ materia.profesor_id.nombre }} {{ materia.profesor_id.apellido }}
+                </span>
+                <ng-template #sinProfesor>Por asignar</ng-template>
+              </td>
               <td>
                 <span *ngFor="let h of materia.horario" class="horario-tag">
                   {{ h.dia.substring(0, 3) }} {{ h.horaInicio }}
@@ -62,9 +67,9 @@
                 <button
                   class="btn-agregar"
                   [class.btn-quitar]="estaSeleccionada(materia._id)"
-                  [disabled]="materia.cupoDisponible === 0 && !estaSeleccionada(materia._id)"
+                  [disabled]="(!materia.profesor_id || materia.cupoDisponible === 0) && !estaSeleccionada(materia._id)"
                   (click)="toggleMateria(materia)">
-                  {{ estaSeleccionada(materia._id) ? '✕ Quitar' : '+ Agregar' }}
+                  {{ estaSeleccionada(materia._id) ? '✕ Quitar' : (!materia.profesor_id ? 'Sin profesor' : '+ Agregar') }}
                 </button>
               </td>
             </tr>

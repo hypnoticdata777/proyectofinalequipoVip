@@ -86,11 +86,36 @@ const ejecutarInscripcion = async (alumnoId, materiaIds, periodo) => {
 // validarInscripcion: solo ejecuta las validaciones, sin crear el documento.
 // El controlador inscripcion.controller.js lo usa para separar validación de persistencia.
 const validarInscripcion = async (alumnoId, materiaIds, periodo) => {
+  await verificarSinAdeudos(alumnoId);
+  const materiasSeleccionadas = [];
+
   for (const materiaId of materiaIds) {
-    await verificarSinAdeudos(alumnoId);
     const materia = await verificarCupo(materiaId);
+    if (!materia.activa || materia.periodo !== periodo) {
+      throw new Error(`La materia "${materia.nombre}" no está disponible en el periodo ${periodo}`);
+    }
     await verificarSeriacion(alumnoId, materia);
     await verificarHorario(alumnoId, periodo, materiaId);
+    materiasSeleccionadas.push(materia);
+  }
+
+  // También valida choques entre las materias elegidas en la misma solicitud.
+  for (let i = 0; i < materiasSeleccionadas.length; i++) {
+    for (let j = i + 1; j < materiasSeleccionadas.length; j++) {
+      for (const h1 of materiasSeleccionadas[i].horario) {
+        for (const h2 of materiasSeleccionadas[j].horario) {
+          if (
+            h1.dia === h2.dia &&
+            h1.horaInicio < h2.horaFin &&
+            h2.horaInicio < h1.horaFin
+          ) {
+            throw new Error(
+              `Choque de horario entre "${materiasSeleccionadas[i].nombre}" y "${materiasSeleccionadas[j].nombre}"`
+            );
+          }
+        }
+      }
+    }
   }
 };
 

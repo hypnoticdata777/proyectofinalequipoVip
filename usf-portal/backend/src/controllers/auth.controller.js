@@ -73,4 +73,16 @@ const me = async (req, res) => {
   }
 };
 
-module.exports = { register, login, me };
+// GET /api/auth/profesores — catálogo mínimo para asignar materias (solo admin)
+const listarProfesores = async (req, res) => {
+  try {
+    const profesores = await User.find({ rol: 'profesor', activo: true })
+      .select('nombre apellido email')
+      .sort({ apellido: 1, nombre: 1 });
+    res.json(profesores);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { register, login, me, listarProfesores };

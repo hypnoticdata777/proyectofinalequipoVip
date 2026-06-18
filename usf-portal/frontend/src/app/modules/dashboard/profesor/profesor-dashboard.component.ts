@@ -32,7 +32,9 @@ export class ProfesorDashboardComponent implements OnInit {
   cargarMaterias(profesorId: string): void {
     this.apiService.get<any[]>('materias').subscribe({
       next: (mats) => {
-        this.materias = mats.filter(m => m.profesor?._id === profesorId || m.profesor === profesorId);
+        this.materias = mats.filter(
+          m => m.profesor_id?._id === profesorId || m.profesor_id === profesorId
+        );
         this.cargando = false;
       },
       error: () => { this.cargando = false; }
