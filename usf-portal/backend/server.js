@@ -50,5 +50,5 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
-  console.log(`Servidor en puerto ${PORT}`);
+  console.log(`Servidor en puerto ${PORT} - ${new Date().toISOString()}`);
 });
