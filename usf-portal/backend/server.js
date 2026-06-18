@@ -14,7 +14,8 @@ const httpServer = http.createServer(app);
 // las notificaciones al navegador usan SSE (ver notificaciones.controller.js).
 const allowedOrigins = [
   'http://localhost:4200',
-  process.env.FRONTEND_URL,
+  'https://proyectofinalequipo-vip.vercel.app', // canonical Vercel domain
+  process.env.FRONTEND_URL,                      // any extra domain via env var
 ].filter(Boolean);
 
 const corsOptions = {
