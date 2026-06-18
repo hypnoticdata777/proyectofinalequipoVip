@@ -10,34 +10,16 @@ const connectDB = require('./src/config/db');
 const app = express();
 const httpServer = http.createServer(app);
 
-// Socket.io se mantiene disponible para usos futuros internos;
-// las notificaciones al navegador usan SSE (ver notificaciones.controller.js).
-const allowedOrigins = [
-  'http://localhost:4200',
-  'https://proyectofinalequipo-vip.vercel.app', // canonical Vercel domain
-  process.env.FRONTEND_URL,                      // any extra domain via env var
-].filter(Boolean);
-
-const corsOptions = {
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-};
-
+// Auth uses JWT in localStorage (not cookies), so open CORS is safe here.
 const io = new Server(httpServer, {
-  cors: { origin: allowedOrigins, methods: ['GET', 'POST'] }
+  cors: { origin: '*', methods: ['GET', 'POST'] }
 });
 
 // Conexión a MongoDB Atlas
 connectDB();
 
 // Middlewares globales
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // Hace io accesible desde cualquier controlador via req.app.get('io')
