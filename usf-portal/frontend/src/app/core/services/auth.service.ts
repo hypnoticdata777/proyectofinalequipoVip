@@ -91,6 +91,10 @@ export class AuthService {
     }
   }
 
+  resetPassword(email: string, newPassword: string): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/auth/reset-password`, { email, newPassword });
+  }
+
   getToken(): string | null {
     return localStorage.getItem(this.TOKEN_KEY);
   }

@@ -14,9 +14,10 @@
     </div>
 
     <div class="alert-error" *ngIf="error">{{ error }}</div>
+    <div class="alert-success" *ngIf="exito">{{ exito }}</div>
 
     <!-- Login -->
-    <form *ngIf="!modoRegistro" (ngSubmit)="iniciarSesion()" class="auth-form">
+    <form *ngIf="!modoRegistro && !modoOlvide" (ngSubmit)="iniciarSesion()" class="auth-form">
       <div class="field-group">
         <label for="email">Email</label>
         <input id="email" type="email" [(ngModel)]="emailLogin" name="emailLogin"
@@ -32,8 +33,30 @@
       </button>
     </form>
 
+    <!-- Recuperar contraseña -->
+    <form *ngIf="modoOlvide" (ngSubmit)="recuperarContrasena()" class="auth-form">
+      <div class="field-group">
+        <label>Email de tu cuenta</label>
+        <input type="email" [(ngModel)]="emailReset" name="emailReset"
+               placeholder="usuario@usf.edu.mx" required />
+      </div>
+      <div class="field-group">
+        <label>Nueva contraseña</label>
+        <input type="password" [(ngModel)]="newPassword" name="newPassword"
+               placeholder="Mínimo 8 caracteres" required />
+      </div>
+      <div class="field-group">
+        <label>Confirmar contraseña</label>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword"
+               placeholder="Repite la contraseña" required />
+      </div>
+      <button type="submit" class="btn-primary" [disabled]="cargando">
+        {{ cargando ? 'Actualizando…' : 'Cambiar Contraseña' }}
+      </button>
+    </form>
+
     <!-- Registro -->
-    <form *ngIf="modoRegistro" (ngSubmit)="registrarse()" class="auth-form">
+    <form *ngIf="modoRegistro && !modoOlvide" (ngSubmit)="registrarse()" class="auth-form">
       <div class="fields-row">
         <div class="field-group">
           <label>Nombre</label>
@@ -73,8 +96,14 @@
       </button>
     </form>
 
-    <button class="btn-link" (click)="cambiarModo()">
+    <button *ngIf="!modoOlvide" class="btn-link" (click)="cambiarModo()">
       {{ modoRegistro ? '¿Ya tienes cuenta? Inicia sesión' : '¿Primera vez? Regístrate' }}
+    </button>
+    <button *ngIf="!modoRegistro && !modoOlvide" class="btn-link" (click)="irAOlvide()">
+      ¿Olvidaste tu contraseña?
+    </button>
+    <button *ngIf="modoOlvide" class="btn-link" (click)="volverALogin()">
+      Volver al inicio de sesión
     </button>
 
     <p class="footer-text">Solo para personal y alumnos de USF</p>

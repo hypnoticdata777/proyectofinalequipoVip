@@ -85,4 +85,24 @@ const listarProfesores = async (req, res) => {
   }
 };
 
-module.exports = { register, login, me, listarProfesores };
+// POST /api/auth/reset-password — reemplaza la contraseña si el email existe
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    if (!email || !newPassword) {
+      return res.status(400).json({ message: 'Email y nueva contraseña son requeridos' });
+    }
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'No existe una cuenta con ese email' });
+    }
+    const salt = parseInt(process.env.BCRYPT_SALT_ROUNDS) || 10;
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+    res.json({ message: 'Contraseña actualizada correctamente' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+module.exports = { register, login, me, listarProfesores, resetPassword };
