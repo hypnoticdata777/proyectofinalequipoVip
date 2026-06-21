@@ -323,6 +323,7 @@ usf-portal/
 |---|---|---|---|
 | POST | `/api/auth/register` | Público | Registrar usuario con rol |
 | POST | `/api/auth/login` | Público | Login → devuelve JWT |
+| POST | `/api/auth/reset-password` | Público | Cambiar contraseña por email |
 | GET | `/api/auth/profesores` | Admin | Listar profesores activos |
 | GET | `/api/auth/me` | JWT | Perfil del usuario autenticado |
 
