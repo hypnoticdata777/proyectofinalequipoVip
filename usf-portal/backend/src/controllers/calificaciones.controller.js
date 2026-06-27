@@ -3,7 +3,10 @@
 // e integradas en calificaciones.routes.js.
 const Calificacion = require('../models/Calificacion');
 const Notificacion = require('../models/Notificacion');
-
+// SSE se dispara después de guardar en BD, no antes,
+// para no notificar si la escritura falla.
+// cerrada es irreversible: simula el cierre legal de acta escolar.
+// No se valida en el frontend; la restricción vive en el backend.
 // GET /api/calificaciones/:materiaId — devuelve todas las calificaciones de una materia (admin)
 const verPorMateria = async (req, res) => {
   try {
