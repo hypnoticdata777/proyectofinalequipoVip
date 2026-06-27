@@ -1,6 +1,5 @@
-// Componente de gestión de inscripciones para el admin.
-// Lista todas las inscripciones del sistema y permite cancelarlas.
-// Usa DELETE /api/inscripciones/:id (alias de PUT /:id/cancelar en el backend).
+// Al cancelar con éxito se filtra el array local en vez de recargar el API,
+// ahorrando una llamada extra y haciendo la respuesta de la UI instantánea.
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
