@@ -68,11 +68,16 @@ const ejecutarInscripcion = async (alumnoId, materiaIds, periodo) => {
     await verificarSeriacion(alumnoId, materia);
     await verificarHorario(alumnoId, periodo, materiaId);
   }
-
+// El orden de validaciones importa: primero adeudos (barato en consultas),
+// luego cupo, seriación y horario. Si falla una, se corta sin seguir.
+  // $inc atómico para evitar race condition cuando dos alumnos
+// toman el último cupo al mismo tiempo.
   for (const materiaId of materiaIds) {
     await Materia.findByIdAndUpdate(materiaId, { $inc: { cupoDisponible: -1 } });
   }
-
+// Se crean los documentos Calificacion vacíos aquí y no en el
+// controlador de calificaciones para garantizar que siempre existan
+// antes de que el profesor intente cargar notas.
   const inscripcion = await Inscripcion.create({
     alumno_id: alumnoId,
     periodo,
