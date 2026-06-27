@@ -6,7 +6,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
-
+// El frontend no valida cupo, seriación ni horario — esa lógica vive
+// en inscripcion.service.js (backend) para que sea inviolable desde cualquier cliente.
 @Component({
   selector: 'app-inscripciones-admin',
   standalone: true,
@@ -25,14 +26,16 @@ export class InscripcionesAdminComponent implements OnInit {
   ngOnInit(): void {
     this.cargarInscripciones();
   }
-
+// tipoError guarda el código máquina del backend (SIN_CUPO, ADEUDO_PENDIENTE…)
+// separado del mensaje, para poder mostrar un ícono distinto por cada caso.
   cargarInscripciones(): void {
     this.apiService.get<any[]>('inscripciones').subscribe({
       next: (data) => { this.inscripciones = data; this.cargando = false; },
       error: () => { this.error = 'No se pudieron cargar las inscripciones.'; this.cargando = false; }
     });
   }
-
+// enviando=true deshabilita el botón mientras espera al servidor,
+// evitando doble-submit accidental del alumno.
   cancelarInscripcion(id: string): void {
     if (!confirm('¿Cancelar esta inscripción?')) return;
     this.apiService.delete<any>(`inscripciones/${id}`).subscribe({
