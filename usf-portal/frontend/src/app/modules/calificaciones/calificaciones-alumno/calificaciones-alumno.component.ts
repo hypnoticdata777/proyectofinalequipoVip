@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 import { AuthService } from '../../../core/services/auth.service';
-
+// No se manda alumnoId en la URL: el backend extrae el id del JWT.
+// Así un alumno no puede ver las notas de otro cambiando la ruta.
 @Component({
   selector: 'app-calificaciones-alumno',
   standalone: true,
