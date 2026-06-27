@@ -8,7 +8,8 @@ import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
-
+// guardando y mensajes son Records keyed por cal._id para que cada fila
+// tenga su propio estado de carga — el profesor puede editar varias a la vez.
 @Component({
   selector: 'app-calificaciones',
   standalone: true,
@@ -20,6 +21,8 @@ export class CalificacionesComponent implements OnInit {
   private readonly apiService = inject(ApiService);
   private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
+// El frontend solo manda parcial1, parcial2, parcial3.
+// El backend calcula 'final' para que la fórmula sea consistente en todos los clientes.
 
   rolUsuario = this.authService.getUserRole();
   materias: any[] = [];
@@ -65,6 +68,8 @@ export class CalificacionesComponent implements OnInit {
       error: () => { this.cargandoCalificaciones = false; }
     });
   }
+// Soporte de ?materiaId= en la URL permite que el dashboard del profesor
+// enlace directo a una materia sin que el usuario tenga que seleccionarla.
 
   onMateriaChange(): void {
     if (this.materiaSeleccionada) this.cargarCalificaciones(this.materiaSeleccionada);
@@ -90,7 +95,8 @@ export class CalificacionesComponent implements OnInit {
       }
     });
   }
-
+// El profesor ve solo sus materias (filtro por profesor_id === usuario._id);
+// el admin ve todas. El filtro es en cliente porque la lista ya viene del API con populate.
   cerrarActa(cal: any): void {
     if (!confirm('¿Cerrar el acta? Esta acción no se puede deshacer.')) return;
     this.apiService.put<any>(`calificaciones/${cal._id}/cerrar`, {}).subscribe({
