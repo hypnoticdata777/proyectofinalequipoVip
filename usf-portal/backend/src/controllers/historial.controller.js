@@ -28,6 +28,10 @@ const kardex = async (req, res) => {
         final: c.final,
       });
     }
+// cerrada es irreversible: simula el cierre legal de acta escolar.
+// No se valida en el frontend; la restricción vive en el backend.
+    // Solo se incluyen calificaciones con cerrada=true para que el historial
+// muestre únicamente periodos oficialmente concluidos, no notas en curso.
 
     const historialPorPeriodo = Object.entries(periodoMap).map(([periodo, materias]) => {
       const finalesConNota = materias.filter(m => m.final !== null && m.final !== undefined);
