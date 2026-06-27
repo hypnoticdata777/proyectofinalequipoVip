@@ -1,7 +1,8 @@
-// Componente de registro de calificaciones (RF-20, RF-21) — vista del profesor y admin.
-// El profesor carga su grupo por materia, edita los parciales y guarda.
-// Al guardar, el backend recalcula el promedio y emite una notificación SSE al alumno.
-// El admin además puede cerrar el acta (RF-21), bloqueando ediciones futuras.
+// createObjectURL crea una URL temporal en memoria para el blob del PDF.
+// revokeObjectURL la libera inmediatamente después del click para no acumular memoria.
+
+// El botón de descarga queda activo en la UI (RF-31 frontend listo)
+// pero el endpoint /historial/:id/pdf aún está pendiente en el backend.
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
